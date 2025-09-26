@@ -55,3 +55,8 @@ Story: As a user, I want a simple dashboard where I can see my tasks, teams, and
 Story: As a user, I want a profile/settings page so that I can update my email or password.
 
 Story: As a user, I want to toggle email notifications on/off so that I can control what I receive.
+
+work flow :
+initial
+register ====> login =====> create a workspace =====> add tasks with priority ====> view your tasks in a todo list, add notes to tasks ====> invite other teammates ====> assign tasks to others ====> create chatroom and add teammates ====> view notification
+
