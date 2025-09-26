@@ -1,0 +1,57 @@
+Epic 1: Authentication & Users
+
+Story: As a user, I want to register an account with email and password so that I can use the system.
+
+Story: As a user, I want to log in securely so that I can access my workspace.
+
+Story: As a user, I want to log out so that my account is secure on shared devices.
+
+Story: As a developer, I want to protect all APIs with JWT/session so that only authenticated users can access them.
+
+Epic 2: Teams & Workspaces (Multi-tenancy)
+
+Story: As a user, I want to create a team workspace so that I can collaborate with others.
+
+Story: As a user, I want to invite teammates via email so that they can join my team.
+
+Story: As a user, I want to join a team when invited so that I can access its tasks and chat.
+
+Story: As a user, I want to switch between my personal space and team space so that I can separate work.
+
+Epic 3: Task Management
+
+Story: As a user, I want to create personal tasks so that I can organize my own work.
+
+Story: As a user, I want to create shared tasks in a team workspace so that the team can collaborate.
+
+Story: As a user, I want to assign tasks to teammates so that responsibilities are clear.
+
+Story: As a user, I want to update a task’s status (to-do, in progress, done) so that I can track progress.
+
+Story: As a user, I want to view a list of tasks in my workspace so that I can see what needs to be done.
+
+Epic 4: Team Chat
+
+Story: As a user, I want to send messages in a team chat so that I can collaborate with teammates in real time.
+
+Story: As a user, I want to see new chat messages instantly so that I don’t miss important updates.
+
+Story: As a user, I want messages to be saved so that I can read past conversations later.
+
+Epic 5: Notifications
+
+Story: As a user, I want to receive in-app notifications when I’m assigned a task so that I don’t miss work.
+
+Story: As a user, I want to receive in-app notifications when I’m invited to a team so that I know I’ve been added.
+
+Story: As a user, I want to mark notifications as read so that I can focus on new ones.
+
+Story: As a user, I want to receive email notifications for important updates so that I stay informed even when offline.
+
+Epic 6: UI & Settings
+
+Story: As a user, I want a simple dashboard where I can see my tasks, teams, and notifications at a glance.
+
+Story: As a user, I want a profile/settings page so that I can update my email or password.
+
+Story: As a user, I want to toggle email notifications on/off so that I can control what I receive.
