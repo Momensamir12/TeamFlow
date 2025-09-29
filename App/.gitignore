@@ -9,9 +9,6 @@ obj/
 *.userosscache
 *.sln.docstates
 
-# Rider
-.idea/
-
 # Other
 *.log
 *.vsconfig
