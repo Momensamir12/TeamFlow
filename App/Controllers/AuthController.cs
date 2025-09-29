@@ -5,6 +5,8 @@ using App.Infrastructure.Auth.Service;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 
 namespace App.API.Controllers
 {
@@ -26,7 +28,7 @@ namespace App.API.Controllers
             return Ok(user);
         }
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(SecurityUserDTO request)
+        public async Task<ActionResult<TokenResponseDTO>> Login(SecurityUserDTO request)
         {
             var token = await _authService.LoginAsync(request);
             if (token is null)
@@ -34,6 +36,20 @@ namespace App.API.Controllers
 
             return Ok(token);
         }
+        [HttpGet("admin")]
+        [Authorize(Roles = "Admin")]
+        public ActionResult<string> AdminEndpoint()
+        {
+            return Ok("You are an admin !");
+        }
+        [HttpPost("refresh-token")]
+        public async Task<ActionResult<TokenResponseDTO>> RefreshToken(RefreshTokenRequestDTO request)
+        {
+            var result = await _authService.RefreshTokenAsync(request);
+            if (result is null || result.RefreshToken is null)
+                return Unauthorized("Invalid refresh token");
 
+            return Ok(result);    
+        }
     }
 }

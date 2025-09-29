@@ -1,6 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using App.Infrastructure.Presistance;
 using App.Infrastructure.Auth.Service;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens.Experimental;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,7 +19,23 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     ));
-builder.Services.AddScoped<AuthService>();    
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["AppSettings:Audience"],
+        ValidateLifetime = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)),
+        ValidateIssuerSigningKey = true
+
+    };
+});   
+builder.Services.AddScoped<AuthService>();
+
 
 var app = builder.Build();
 
@@ -21,10 +43,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "v1");
-    });
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
