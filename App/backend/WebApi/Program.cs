@@ -10,7 +10,6 @@ using App.Infrastructure.Authentication.Service;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using App.Application.Authentication.Validations;
-using App.Domain.Model;
 using App.Application.Data;
 using App.Application.Users.Service;
 var builder = WebApplication.CreateBuilder(args);
@@ -64,8 +63,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 });
 
 builder.Services.AddScoped<ISecurityUserRepository, EFSecurityUserRepository>();
+builder.Services.AddScoped<IUserRepository, EFUserRepository>();
 builder.Services.AddScoped<AuthenticationService>();
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<RegisterationService>();
 
 
 var app = builder.Build();

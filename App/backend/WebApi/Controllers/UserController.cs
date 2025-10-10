@@ -11,15 +11,15 @@ namespace App.API.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
-    private readonly UserService _userService;
-    public UserController(UserService userService)
+    private readonly RegisterationService _registerationService;
+    public UserController(RegisterationService registerationService)
     {
-        _userService = userService;
+        _registerationService = registerationService;
     }
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequestDTO request)
     {
-        var result = await _userService.RegisterUserAsync(request);
+        var result = await _registerationService.RegisterUserAsync(request);
 
         if (!result.Succeeded)
             return BadRequest(new { message = result.Error });

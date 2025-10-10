@@ -24,13 +24,14 @@ namespace App.Infrastructure.Authentication.Service
             _jwtSettings = jwtOptions.Value;
         }
 
-        public async Task<Result> RegisterUserAsync(RegisterRequestDTO request)
+        public async Task<SecurityUser?> RegisterUserAsync(RegisterRequestDTO request, Guid userId)
         {
             if (await _securityUserRepository.UsernameExistsAsync(request.Username))
-                return Result.Failure("Username already exists");
+                return null;
 
             var user = new SecurityUser
             {
+                Id = userId,
                 Username = request.Username,
                 Email = request.Email,
                 IsActive = true,
@@ -42,7 +43,7 @@ namespace App.Infrastructure.Authentication.Service
             await _securityUserRepository.AddAsync(user);
             await _securityUserRepository.SaveChangesAsync();
 
-            return Result.Success();
+            return user;
         }
 
 

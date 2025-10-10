@@ -6,7 +6,6 @@ namespace App.Infrastructure.Auth.Entities
         public String Username { get; set; } = string.Empty;
         public String PasswordHash { get; set; } = string.Empty;
         public String Email { get; set; } = string.Empty;
-        public Guid DomainUserId { get; set; }
         public List<string>? Roles { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }

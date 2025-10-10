@@ -13,6 +13,6 @@ namespace App.Domain.Model
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        
+        public ICollection<UserTask> Tasks { get; } = new List<UserTask>();
     }
 }
