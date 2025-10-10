@@ -8,6 +8,8 @@ namespace App.Infrastructure.Auth.Repositories
     Task<SecurityUser?> GetByIdAsync(Guid id);
     Task<bool> UsernameExistsAsync(string username);
     Task AddAsync(SecurityUser user);
+    public Task<SecurityUser> DeleteUserAsync(SecurityUser user);
+
     Task SaveChangesAsync();
 }
 
