@@ -24,13 +24,20 @@ namespace App.Infrastructure.Authentication.Service
             _jwtSettings = jwtOptions.Value;
         }
 
-        public async Task<Result> RegisterUserAsync(RegisterRequestDTO userDTO)
+        public async Task<Result> RegisterUserAsync(RegisterRequestDTO request)
         {
-            if (await _securityUserRepository.UsernameExistsAsync(userDTO.Username))
+            if (await _securityUserRepository.UsernameExistsAsync(request.Username))
                 return Result.Failure("Username already exists");
 
-            var user = new SecurityUser { Username = userDTO.Username };
-            user.PasswordHash = new PasswordHasher<SecurityUser>().HashPassword(user, userDTO.Password);
+            var user = new SecurityUser
+            {
+                Username = request.Username,
+                Email = request.Email,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            user.PasswordHash = new PasswordHasher<SecurityUser>().HashPassword(user, request.Password);
 
             await _securityUserRepository.AddAsync(user);
             await _securityUserRepository.SaveChangesAsync();
@@ -39,20 +46,33 @@ namespace App.Infrastructure.Authentication.Service
         }
 
 
-        public async Task<TokenResponseDTO?> LoginAsync(LoginRequestDTO userDTO)
+        public async Task<TokenResponseDTO?> LoginAsync(LoginRequestDTO request)
         {
-            var user = await _securityUserRepository.GetByUsernameAsync(userDTO.Username);
+            var user = await _securityUserRepository.GetByUsernameAsync(request.Username);
             if (user is null)
                 return null;
 
             var passwordResult = new PasswordHasher<SecurityUser>()
-                .VerifyHashedPassword(user, user.PasswordHash, userDTO.Password);
+                .VerifyHashedPassword(user, user.PasswordHash, request.Password);
 
             if (passwordResult == PasswordVerificationResult.Failed)
                 return null;
 
             return await GenerateToken(user);
         }
+        
+        public async Task<Result> DeleteUserByUsernameAsync(string username)
+        {
+            var user = await _securityUserRepository.GetByUsernameAsync(username);
+            if (user == null)
+                return Result.Failure("User not found");
+
+            await _securityUserRepository.DeleteUserAsync(user);
+            await _securityUserRepository.SaveChangesAsync();
+
+            return Result.Success();
+        }
+
 
         public async Task<TokenResponseDTO?> RefreshTokenAsync(RefreshTokenRequestDTO request)
         {
