@@ -11,14 +11,11 @@ namespace App.Application.Data
         public DbSet<UserTask> Tasks { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>()
-            .HasMany(e => e.Tasks)
-            .WithOne()
-            .HasForeignKey(t => t.AssigneeId);
-
-            modelBuilder.Entity<User>()
-            .HasIndex(u => u.Username)
-            .IsUnique();
+            modelBuilder.Entity<UserTask>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(u => u.AssigneeId);
         }
+
     }
 }

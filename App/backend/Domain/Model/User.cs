@@ -8,11 +8,9 @@ namespace App.Domain.Model
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string? AvatarUrl { get; set; } 
-
-        
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public ICollection<UserTask> Tasks { get; } = new List<UserTask>();
+
     }
 }

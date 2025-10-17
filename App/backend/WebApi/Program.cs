@@ -11,7 +11,13 @@ using FluentValidation.AspNetCore;
 using FluentValidation;
 using App.Application.Authentication.Validations;
 using App.Application.Data;
-using App.Application.Users.Service;
+using App.Application.Service;
+using App.Infrastructure.Repositories;
+using App.Application.Services;
+using App.Application.MappingProfiles;
+using App.Application.Interfaces;
+using App.Infrastructure.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
@@ -62,10 +68,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     };
 });
 
+builder.Services.AddAutoMapper(typeof(TaskMappingProfile).Assembly);
+
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddScoped<ISecurityUserRepository, EFSecurityUserRepository>();
 builder.Services.AddScoped<IUserRepository, EFUserRepository>();
+builder.Services.AddScoped<ITaskRepository, EFTaskRepository>();
+
 builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<RegisterationService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<TaskService>();
+builder.Services.AddScoped<UserValidator>();
 
 
 var app = builder.Build();

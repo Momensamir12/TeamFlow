@@ -1,11 +1,11 @@
 using System.Transactions;
 using App.Application.Authentication.DTOS;
-using App.Application.Data;
 using App.Common;
 using App.Domain.Model;
 using App.Infrastructure.Authentication.Service;
+using App.Infrastructure.Repositories;
 
-namespace App.Application.Users.Service;
+namespace App.Application.Service;
 
 public class RegisterationService
 {

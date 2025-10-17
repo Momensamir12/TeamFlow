@@ -1,38 +1,40 @@
-using App.Infrastructure.Auth.Entities;
 using Microsoft.AspNetCore.Mvc;
 using App.Infrastructure.Authentication.Service;
 using App.Application.Authentication.DTOS;
-using App.Common;
+using App.Application.Common;
 
 namespace App.API.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/auth")]
 [ApiController]
 public class AuthController : ControllerBase
 {
     private readonly AuthenticationService _authService;
+    
     public AuthController(AuthenticationService authService)
     {
         _authService = authService;
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<TokenResponseDTO>> Login(LoginRequestDTO request)
+    public async Task<ActionResult<ApiResponse<TokenResponseDTO>>> Login(LoginRequestDTO request)
     {
         var token = await _authService.LoginAsync(request);
+        
         if (token is null)
-            return BadRequest("Invalid username or password");
+            return BadRequest(ApiResponse<TokenResponseDTO>.FailureResponse("Invalid username or password"));
 
-        return Ok(token);
+        return Ok(ApiResponse<TokenResponseDTO>.SuccessResponse(token, "Login successful"));
     }
 
     [HttpPost("refresh-token")]
-    public async Task<ActionResult<TokenResponseDTO>> RefreshToken(RefreshTokenRequestDTO request)
+    public async Task<ActionResult<ApiResponse<TokenResponseDTO>>> RefreshToken(RefreshTokenRequestDTO request)
     {
         var result = await _authService.RefreshTokenAsync(request);
+        
         if (result is null || result.RefreshToken is null)
-            return Unauthorized("Invalid refresh token");
+            return Unauthorized(ApiResponse<TokenResponseDTO>.FailureResponse("Invalid refresh token"));
 
-        return Ok(result);
+        return Ok(ApiResponse<TokenResponseDTO>.SuccessResponse(result, "Token refreshed successfully"));
     }
 }

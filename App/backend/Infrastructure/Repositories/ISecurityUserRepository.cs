@@ -1,7 +1,7 @@
 using App.Infrastructure.Auth.Entities;
 
-namespace App.Infrastructure.Auth.Repositories
-{
+namespace App.Infrastructure.Repositories;
+
     public interface ISecurityUserRepository
 {
     Task<SecurityUser?> GetByUsernameAsync(string username);
@@ -13,4 +13,3 @@ namespace App.Infrastructure.Auth.Repositories
     Task SaveChangesAsync();
 }
 
-}

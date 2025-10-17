@@ -1,5 +1,6 @@
 using App.Infrastructure.Auth.Entities;
 using App.Infrastructure.Data;
+using App.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace App.Infrastructure.Auth.Repositories
