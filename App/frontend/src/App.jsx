@@ -1,33 +1,23 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthProvider';
-import Login from './components/auth/Login';
-import Register from './components/auth/Register';
-import PrivateRoute from './components/auth/PrivateRoute';
-import Dashboard from './components/Dashboard'; // Your main app component
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('accessToken');
+    if (token) setIsLoggedIn(true);
+  }, []);
+
   return (
-    <AuthProvider>
-      <Router>
-        <div className="App">
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route 
-              path="/dashboard" 
-              element={
-                <PrivateRoute>
-                  <Dashboard />
-                </PrivateRoute>
-              } 
-            />
-            <Route path="/" element={<Navigate to="/dashboard" />} />
-          </Routes>
-        </div>
-      </Router>
-    </AuthProvider>
+    <div className="App">
+      {isLoggedIn ? (
+        <DashboardPage onLogout={() => setIsLoggedIn(false)} />
+      ) : (
+        <LoginPage onLogin={() => setIsLoggedIn(true)} />
+      )}
+    </div>
   );
 }
 
