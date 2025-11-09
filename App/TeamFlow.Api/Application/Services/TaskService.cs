@@ -25,14 +25,14 @@ public class TaskService
         _taskAuthorizer = taskAuthorizer;
     }
 
-    public async Task CreateTaskAsync(UserTaskDto taskDTO, Guid userId)
+    public async Task CreateTaskAsync(CreateTaskDto taskDTO, Guid userId)
     {
         await _userValidator.ActiveUserAsync(userId);
 
         var task = _mapper.Map<UserTask>(taskDTO);
         task.OwnerId = userId;
         task.AssigneeId = userId;
-        task.Status = TaskStatus.Todo;
+        task.ProjectId = taskDTO.ProjectId;
         task.CreatedAt = DateTime.UtcNow;
         task.UpdatedAt = DateTime.UtcNow;
 
@@ -43,8 +43,11 @@ public class TaskService
     public async Task<List<UserTaskDto>> GetAssigneeTasksAsync(Guid userId)
     {
         await _userValidator.ActiveUserAsync(userId);
+
         var tasks = await _taskRepository.GetAssigneeTasksAsync(userId);
-        return _mapper.Map<List<UserTaskDto>>(tasks);
+        var dtos = _mapper.Map<List<UserTaskDto>>(tasks);
+        
+        return dtos;
     }
 
     public async Task UpdateTaskStatusAsync(UpdateTaskStatusDto dto)

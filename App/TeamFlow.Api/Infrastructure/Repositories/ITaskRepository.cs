@@ -9,5 +9,6 @@ public interface ITaskRepository
     Task Update(UserTask task);
     Task DeleteAsync(UserTask task);
     Task SaveChangesAsync();
+    Task<List<UserTask>> GetProjectTasksAsync(Guid ProjectId);
     
 };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { loginUser } from '../../api/taskApi';
+import { loginUser } from '../../api/authenticationApi';
 import { LogIn } from 'lucide-react';
 
 function LoginForm({ onSuccess, onSwitchToRegister }) {
@@ -32,7 +32,6 @@ function LoginForm({ onSuccess, onSwitchToRegister }) {
   return (
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-      <p className="text-gray-600 mb-6">Sign in to manage your tasks</p>
 
       {error && (
         <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">

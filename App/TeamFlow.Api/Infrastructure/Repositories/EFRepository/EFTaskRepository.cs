@@ -52,5 +52,13 @@ public class EFTaskRepository : ITaskRepository
         .OrderBy(t => t.Deadline)
         .ToListAsync();
     }
-    
+    public async Task<List<UserTask>> GetProjectTasksAsync (Guid projectId)
+    {
+        var tasks = await _context.Tasks
+        .Where(t => t.ProjectId == projectId)
+        .OrderBy(t => t.Deadline)
+        .ToListAsync();
+
+        return tasks;
+    }
 }

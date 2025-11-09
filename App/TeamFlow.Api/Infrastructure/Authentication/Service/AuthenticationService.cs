@@ -5,7 +5,6 @@ using System.Text;
 using App.Application.Authentication.DTOS;
 using App.Common;
 using App.Infrastructure.Auth.Entities;
-using App.Infrastructure.Auth.Repositories;
 using App.Infrastructure.Repositories;
 using App.Infrastructure.Settings;
 using Microsoft.AspNetCore.Identity;
@@ -33,7 +32,7 @@ public class AuthenticationService
     public async Task<SecurityUser?> RegisterUserAsync(RegisterRequestDTO request, Guid userId)
     {
         if (await _securityUserRepository.UsernameExistsAsync(request.Username))
-            return null;
+            throw new UsernameExistsException();
 
         var user = new SecurityUser
         {

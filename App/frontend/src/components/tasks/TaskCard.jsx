@@ -1,55 +1,63 @@
 import React from 'react';
-import { CheckCircle, Clock, AlertCircle, Calendar } from 'lucide-react';
+import { Calendar, Clock, AlertCircle, CheckCircle, Circle, Loader } from 'lucide-react';
+import { getStatusName, getPriorityName, getStatusColor, getPriorityColor, TASK_STATUS } from '../../constants/config';
 
-function TaskCard({ task }) {
+function TaskCard({ task, onTaskUpdated }) {
   const getStatusIcon = (status) => {
-    switch(status?.toLowerCase()) {
-      case 'done':
-        return <CheckCircle className="text-green-500" size={20} />;
-      case 'inprogress':
-        return <Clock className="text-blue-500" size={20} />;
-      case 'blocked':
-        return <AlertCircle className="text-red-500" size={20} />;
-      default: // Todo
-        return <AlertCircle className="text-yellow-500" size={20} />;
+    switch (status) {
+      case TASK_STATUS.TODO:
+        return <Circle size={16} className="text-gray-500" />;
+      case TASK_STATUS.IN_PROGRESS:
+        return <Loader size={16} className="text-blue-500" />;
+      case TASK_STATUS.DONE:
+        return <CheckCircle size={16} className="text-green-500" />;
+      case TASK_STATUS.BLOCKED:
+        return <AlertCircle size={16} className="text-red-500" />;
+      default:
+        return <Circle size={16} className="text-gray-500" />;
     }
   };
 
-  const getPriorityColor = (priority) => {
-    switch(priority?.toLowerCase()) {
-      case 'urgent':
-        return 'bg-purple-100 text-purple-700';
-      case 'high':
-        return 'bg-red-100 text-red-700';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-700';
-      case 'low':
-        return 'bg-green-100 text-green-700';
-      default:
-        return 'bg-gray-100 text-gray-700';
-    }
+  const formatDate = (dateString) => {
+    if (!dateString) return 'No deadline';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
+    });
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center gap-2">
-          {getStatusIcon(task.status)}
-          <h3 className="font-semibold text-gray-900">{task.title}</h3>
-        </div>
-        <span className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(task.priority)}`}>
-          {task.priority}
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+      <div className="flex items-start justify-between mb-3">
+        <h3 className="text-lg font-semibold text-gray-900 flex-1">
+          {task.title}
+        </h3>
+        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(task.priority)}`}>
+          {getPriorityName(task.priority)}
         </span>
       </div>
-      
-      <p className="text-gray-600 text-sm mb-3">{task.description}</p>
-      
-      {task.deadline && (
-        <div className="flex items-center gap-1 text-sm text-gray-500">
-          <Calendar size={16} />
-          <span>{new Date(task.deadline).toLocaleDateString()}</span>
-        </div>
+
+      {task.description && (
+        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+          {task.description}
+        </p>
       )}
+
+      <div className="space-y-2 text-sm">
+        <div className="flex items-center gap-2 text-gray-600">
+          <Calendar size={16} />
+          <span>{formatDate(task.deadline)}</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {getStatusIcon(task.status)}
+          <span className={`px-2 py-1 text-xs font-medium rounded border ${getStatusColor(task.status)}`}>
+            {getStatusName(task.status)}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

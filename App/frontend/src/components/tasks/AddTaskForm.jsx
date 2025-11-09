@@ -19,13 +19,12 @@ function AddTaskForm({ onTaskAdded, onCancel }) {
     setLoading(true);
 
     try {
-      const token = sessionStorage.getItem('accessToken');
       const taskData = {
         ...formData,
         deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null
       };
 
-      const result = await addTask(token, taskData);
+      const result = await addTask(taskData);
 
       if (result.success) {
         onTaskAdded();

@@ -1,3 +1,5 @@
+using System.Security.Permissions;
+
 namespace App.Domain.Model;
 
 public class Workspace
@@ -8,6 +10,7 @@ public class Workspace
     public Guid OwnerId { get; set; }
     public bool IsArchived { get; set; }
     public DateTime CreatedAt { get; set; }
+    public string Code { get; set; } = string.Empty;
 
     public User Owner { get; set; } = null!;
     public ICollection<WorkspaceMember> Members { get; set; } = new List<WorkspaceMember>();

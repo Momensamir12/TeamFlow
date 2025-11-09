@@ -22,7 +22,7 @@ public class TaskController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ApiResponse<string>>> CreateTask(UserTaskDto userTaskDTO)
+    public async Task<ActionResult<ApiResponse<string>>> CreateTask(CreateTaskDto userTaskDTO)
     {
         var userId = _currentUserService.UserId;
         await _taskService.CreateTaskAsync(userTaskDTO, userId);

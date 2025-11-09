@@ -1,6 +1,7 @@
 using App.Application.Data;
 using App.Domain.Model;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Crypto.Prng;
 
 namespace App.Infrastructure.Repositories;
 
@@ -15,7 +16,10 @@ public class EFWorkspaceRepository : IWorkspaceRepository
 
     public async Task<Workspace> GetByIdAsync(Guid id)
     {
-        var workspace = await _appDbContext.Workspaces.FindAsync(id);
+        var workspace = await _appDbContext.Workspaces
+            .Include(w => w.Members.Where(m => m.RemovedAt == null))  // Change this line
+            .FirstOrDefaultAsync(w => w.Id == id);                     // Change this line
+            
         if (workspace is null)
             throw new KeyNotFoundException($"Workspace with id '{id}' not found.");
             
@@ -88,5 +92,16 @@ public class EFWorkspaceRepository : IWorkspaceRepository
             .OrderByDescending(wm => wm.Role)
             .ThenBy(wm => wm.JoinedAt)
             .ToListAsync();
+    }
+    public async Task<Workspace> GetByCodeAsync (string code)
+    {
+        var workspace = await _appDbContext.Workspaces
+        .Include(w => w.Members.Where(m => m.RemovedAt == null))
+        .FirstOrDefaultAsync(w => w.Code == code);
+        
+        if (workspace is null)
+            throw new KeyNotFoundException("Workspace code is invalid");
+
+        return workspace;    
     }
 }

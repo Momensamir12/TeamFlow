@@ -10,95 +10,104 @@ namespace App.Application.Data
         public DbSet<User> Users { get; set; }
         public DbSet<UserTask> Tasks { get; set; }
         public DbSet<Workspace> Workspaces { get; set; }
-        public DbSet<WorkspaceMember> WorkspaceMembers { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<WorkspaceMember> WorkspaceMembers { get; set; }
         public DbSet<ProjectMember> ProjectMembers { get; set; }
+        public DbSet<WorkspaceInvitation> WorkspaceInvitations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // UserTask -> Assignee (optional)
-            modelBuilder.Entity<UserTask>()
-                .HasOne<User>()
-                .WithMany()
-                .HasForeignKey(u => u.AssigneeId)
-                .OnDelete(DeleteBehavior.SetNull);
+            // User
+            modelBuilder.Entity<User>()
+                .HasKey(u => u.Id);
 
-            // UserTask -> Owner (required) 
+            // UserTask
             modelBuilder.Entity<UserTask>()
-                .HasOne<User>()
-                .WithMany()
-                .HasForeignKey(t => t.OwnerId)
-                .OnDelete(DeleteBehavior.Cascade);  
+                .HasKey(t => t.Id);
 
-            // UserTask -> Project (optional)
             modelBuilder.Entity<UserTask>()
-                .HasOne<Project>()
-                .WithMany(p => p.Tasks)
-                .HasForeignKey(t => t.ProjectId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .Property(t => t.OwnerId)
+                .IsRequired();
 
-            // Workspace -> Owner
+            modelBuilder.Entity<UserTask>()
+                .Property(t => t.AssigneeId)
+                .IsRequired(false);
+
+            modelBuilder.Entity<UserTask>()
+                .Property(t => t.ProjectId)
+                .IsRequired(false);
+
+            // Workspace
             modelBuilder.Entity<Workspace>()
-                .HasOne(w => w.Owner)
-                .WithMany()
-                .HasForeignKey(w => w.OwnerId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasKey(w => w.Id);
 
-            // WorkspaceMember (Many-to-Many)
+            modelBuilder.Entity<Workspace>()
+                .Property(w => w.OwnerId)
+                .IsRequired();
+
+            // Project
+            modelBuilder.Entity<Project>()
+                .HasKey(p => p.Id);
+
+            modelBuilder.Entity<Project>()
+                .Property(p => p.WorkspaceId)
+                .IsRequired();
+
+            modelBuilder.Entity<Project>()
+                .Property(p => p.CreatedByUserId)
+                .IsRequired();
+
+            // WorkspaceMember
             modelBuilder.Entity<WorkspaceMember>()
                 .HasKey(wm => wm.Id);
 
             modelBuilder.Entity<WorkspaceMember>()
-                .HasOne<User>()
-                .WithMany()
-                .HasForeignKey(wm => wm.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .Property(wm => wm.WorkspaceId)
+                .IsRequired();
 
             modelBuilder.Entity<WorkspaceMember>()
-                .HasOne<Workspace>()
-                .WithMany(w => w.Members)
-                .HasForeignKey(wm => wm.WorkspaceId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .Property(wm => wm.UserId)
+                .IsRequired();
 
-          
             modelBuilder.Entity<WorkspaceMember>()
                 .HasIndex(wm => new { wm.WorkspaceId, wm.UserId })
-                .IsUnique()
-                .HasFilter("[RemovedAt] IS NULL");
+                .IsUnique();
 
-            // Project -> Workspace
-            modelBuilder.Entity<Project>()
-                .HasOne<Workspace>()
-                .WithMany(w => w.Projects)
-                .HasForeignKey(p => p.WorkspaceId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // ProjectMember - CONSOLIDATED (remove duplicates)
+            modelBuilder.Entity<ProjectMember>(entity =>
+            {
+                entity.HasKey(pm => pm.Id);
+                
+                entity.Property(pm => pm.ProjectId)
+                    .IsRequired();
+                    
+                entity.Property(pm => pm.UserId)
+                    .IsRequired();
+                
+                entity.HasOne<Project>()
+                    .WithMany(p => p.Members)
+                    .HasForeignKey(pm => pm.ProjectId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                entity.HasOne<User>()
+                    .WithMany()
+                    .HasForeignKey(pm => pm.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                entity.HasIndex(pm => new { pm.ProjectId, pm.UserId })
+                    .IsUnique();
+            });
 
-            // Project -> CreatedByUser
-            modelBuilder.Entity<Project>()
-                .HasOne<User>()
-                .WithMany()
-                .HasForeignKey(p => p.CreatedByUserId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // WorkspaceInvitation
+            modelBuilder.Entity<WorkspaceInvitation>()
+                .HasKey(wi => wi.Id);
 
-            // ProjectMember (Many-to-Many)
-            modelBuilder.Entity<ProjectMember>()
-                .HasKey(pm => pm.Id);
+            modelBuilder.Entity<WorkspaceInvitation>()
+                .Property(wi => wi.WorkspaceId)
+                .IsRequired();
 
-            modelBuilder.Entity<ProjectMember>()
-                .HasOne<User>()
-                .WithMany()
-                .HasForeignKey(pm => pm.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<ProjectMember>()
-                .HasOne<Project>()
-                .WithMany(p => p.ProjectMembers)
-                .HasForeignKey(pm => pm.ProjectId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // Unique: one user per project
-            modelBuilder.Entity<ProjectMember>()
-                .HasIndex(pm => new { pm.ProjectId, pm.UserId })
+            modelBuilder.Entity<WorkspaceInvitation>()
+                .HasIndex(wi => wi.Token)
                 .IsUnique();
         }
     }

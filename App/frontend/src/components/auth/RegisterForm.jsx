@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { registerUser } from '../../api/taskApi';
+import { registerUser } from '../../api/authenticationApi';
 import { UserPlus } from 'lucide-react';
 
 function RegisterForm({ onSuccess, onSwitchToLogin }) {
