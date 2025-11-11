@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TaskCard from './TaskCard';
+import TaskModal from './TaskModal';
 import { TASK_STATUS } from '../../constants/config';
 
 function TaskList({ tasks, onTaskUpdated }) {
+  const [selectedTask, setSelectedTask] = useState(null);
+
   // Group tasks by status
   const todoTasks = tasks.filter(t => t.status === TASK_STATUS.TODO);
   const inProgressTasks = tasks.filter(t => t.status === TASK_STATUS.IN_PROGRESS);
   const doneTasks = tasks.filter(t => t.status === TASK_STATUS.DONE);
   const blockedTasks = tasks.filter(t => t.status === TASK_STATUS.BLOCKED);
+
+  const handleTaskClick = (task) => {
+    setSelectedTask(task);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedTask(null);
+  };
 
   const TaskSection = ({ title, tasks, bgColor, statusColor }) => {
     return tasks.length > 0 ? (
@@ -25,7 +36,7 @@ function TaskList({ tasks, onTaskUpdated }) {
             <TaskCard 
               key={task.id} 
               task={task} 
-              onTaskUpdated={onTaskUpdated}
+              onClick={() => handleTaskClick(task)}
             />
           ))}
         </div>
@@ -42,32 +53,43 @@ function TaskList({ tasks, onTaskUpdated }) {
   }
 
   return (
-    <div>
-      <TaskSection 
-        title="To Do" 
-        tasks={todoTasks} 
-        bgColor="border-gray-400"
-        statusColor="bg-gray-100 text-gray-700"
-      />
-      <TaskSection 
-        title="In Progress" 
-        tasks={inProgressTasks} 
-        bgColor="border-blue-400"
-        statusColor="bg-blue-100 text-blue-700"
-      />
-      <TaskSection 
-        title="Done" 
-        tasks={doneTasks} 
-        bgColor="border-green-400"
-        statusColor="bg-green-100 text-green-700"
-      />
-      <TaskSection 
-        title="Blocked" 
-        tasks={blockedTasks} 
-        bgColor="border-red-400"
-        statusColor="bg-red-100 text-red-700"
-      />
-    </div>
+    <>
+      <div>
+        <TaskSection 
+          title="To Do" 
+          tasks={todoTasks} 
+          bgColor="border-gray-400"
+          statusColor="bg-gray-100 text-gray-700"
+        />
+        <TaskSection 
+          title="In Progress" 
+          tasks={inProgressTasks} 
+          bgColor="border-blue-400"
+          statusColor="bg-blue-100 text-blue-700"
+        />
+        <TaskSection 
+          title="Done" 
+          tasks={doneTasks} 
+          bgColor="border-green-400"
+          statusColor="bg-green-100 text-green-700"
+        />
+        <TaskSection 
+          title="Blocked" 
+          tasks={blockedTasks} 
+          bgColor="border-red-400"
+          statusColor="bg-red-100 text-red-700"
+        />
+      </div>
+
+      {/* Task Detail Modal */}
+      {selectedTask && (
+        <TaskModal 
+          task={selectedTask}
+          onClose={handleCloseModal}
+          onTaskUpdated={onTaskUpdated}
+        />
+      )}
+    </>
   );
 }
 

@@ -15,7 +15,19 @@ export const TASK_PRIORITY = {
   URGENT: 3
 };
 
-// Helper functions to display names
+export const WORKSPACE_ROLE = {
+  VIEWER: 0,
+  MEMBER: 1,
+  ADMIN: 2
+};
+
+export const PROJECT_ROLE = {
+  VIEWER: 0,
+  MEMBER: 1,
+  ADMIN: 2
+};
+
+// Helper functions for task status/priority
 export const getStatusName = (status) => {
   const statusNames = {
     0: 'To Do',
@@ -54,5 +66,50 @@ export const getPriorityColor = (priority) => {
     3: 'bg-red-100 text-red-700'
   };
   return colors[priority] ?? 'bg-gray-100 text-gray-600';
+};
+
+// Helper functions for roles
+export const getWorkspaceRoleName = (role) => {
+  const roleNames = {
+    0: 'Viewer',
+    1: 'Member',
+    2: 'Admin'
+  };
+  return roleNames[role] ?? 'Unknown';
+};
+
+export const getProjectRoleName = (role) => {
+  const roleNames = {
+    0: 'Viewer',
+    1: 'Member',
+    2: 'Admin'
+  };
+  return roleNames[role] ?? 'Unknown';
+};
+
+export const getRoleColor = (role) => {
+  const colors = {
+    0: 'bg-gray-100 text-gray-600',
+    1: 'bg-blue-100 text-blue-600',
+    2: 'bg-purple-100 text-purple-600'
+  };
+  return colors[role] ?? 'bg-gray-100 text-gray-600';
+};
+
+// Permission helpers
+export const canCreateProject = (workspaceRole) => {
+  return workspaceRole >= WORKSPACE_ROLE.MEMBER;
+};
+
+export const canManageWorkspace = (workspaceRole) => {
+  return workspaceRole >= WORKSPACE_ROLE.ADMIN;
+};
+
+export const canEditProject = (projectRole) => {
+  return projectRole >= PROJECT_ROLE.MEMBER;
+};
+
+export const canManageProject = (projectRole) => {
+  return projectRole >= PROJECT_ROLE.ADMIN;
 };
 

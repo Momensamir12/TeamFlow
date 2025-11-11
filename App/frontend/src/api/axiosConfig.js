@@ -3,7 +3,7 @@ import axios from 'axios';
 import { API_BASE_URL } from '../constants/config';
 
 // Create axios instance
-const axiosInstance = axios.create({
+const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
@@ -11,7 +11,7 @@ const axiosInstance = axios.create({
 });
 
 // Request interceptor - Add token to every request
-axiosInstance.interceptors.request.use(
+api.interceptors.request.use(
   (config) => {
     const token = sessionStorage.getItem('accessToken');
     if (token) {
@@ -25,7 +25,7 @@ axiosInstance.interceptors.request.use(
 );
 
 // Response interceptor - Handle token refresh
-axiosInstance.interceptors.response.use(
+api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
@@ -52,7 +52,7 @@ axiosInstance.interceptors.response.use(
 
             // Retry original request with new token
             originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-            return axiosInstance(originalRequest);
+            return api(originalRequest);
           }
         }
       } catch (refreshError) {
@@ -68,4 +68,4 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export default axiosInstance;
+export default api;

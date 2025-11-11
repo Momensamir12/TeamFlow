@@ -108,4 +108,12 @@ public class WorkspaceController : ControllerBase
         await _workspaceService.UpdateMemberRoleAsync(workspaceId, memberUserId, dto.NewRole, userId);
         return Ok(ApiResponse<string>.SuccessResponse("", "Member role updated successfully"));
     }
+
+    [HttpGet("{workspaceId}/my-role")]
+    public async Task<ActionResult<ApiResponse<int>>> GetMyRole(Guid workspaceId)
+    {
+        var userId = _currentUserService.UserId;
+        var role = await _workspaceService.GetUserRoleInWorkspaceAsync(workspaceId, userId);
+        return Ok(ApiResponse<int>.SuccessResponse(role, "User role retrieved successfully"));
+    }
 }

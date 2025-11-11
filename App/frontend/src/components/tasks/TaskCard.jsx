@@ -2,7 +2,7 @@ import React from 'react';
 import { Calendar, Clock, AlertCircle, CheckCircle, Circle, Loader } from 'lucide-react';
 import { getStatusName, getPriorityName, getStatusColor, getPriorityColor, TASK_STATUS } from '../../constants/config';
 
-function TaskCard({ task, onTaskUpdated }) {
+function TaskCard({ task, onClick }) {
   const getStatusIcon = (status) => {
     switch (status) {
       case TASK_STATUS.TODO:
@@ -29,7 +29,10 @@ function TaskCard({ task, onTaskUpdated }) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+    <div 
+      onClick={onClick}
+      className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md hover:border-indigo-300 transition-all cursor-pointer"
+    >
       <div className="flex items-start justify-between mb-3">
         <h3 className="text-lg font-semibold text-gray-900 flex-1">
           {task.title}

@@ -122,7 +122,7 @@ public class WorkspaceService
                 UserId = member.UserId,
                 UserName = user?.FirstName ?? string.Empty,
                 UserEmail = user?.Email ?? string.Empty,
-                Role = member.Role,
+                Role = (int)member.Role,  // Cast enum to int
                 JoinedAt = member.JoinedAt
             });
         }
@@ -263,5 +263,19 @@ public class WorkspaceService
 
         _logger.LogInformation("Member {MemberUserId} role updated to {NewRole} in workspace {WorkspaceId} by user: {CurrentUserId}", 
             memberUserId, newRole, workspaceId, currentUserId);
+    }
+
+    public async Task<int> GetUserRoleInWorkspaceAsync(Guid workspaceId, Guid userId)
+    {
+        await _userValidator.ActiveUserAsync(userId);
+
+        var member =await _workspaceRepository.GetMemberAsync(workspaceId, userId);
+        
+        if (member == null)
+        {
+            throw new InvalidOperationException("User is not a member of this workspace");
+        }
+
+        return (int)member.Role;
     }
 }

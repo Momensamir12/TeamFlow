@@ -1,102 +1,156 @@
 import React, { useState, useEffect } from 'react';
-import { LogOut, Plus } from 'lucide-react';
+import { LogOut, CheckSquare, Users } from 'lucide-react';
 import TaskList from '../components/tasks/TaskList';
 import AddTaskForm from '../components/tasks/AddTaskForm';
+import WorkspaceList from '../components/workspaces/WorkspaceList';
+import WorkspacePage from './WorkspacePage';
 import { getUserTasks } from '../api/taskApi';
 
 function DashboardPage({ onLogout }) {
+  const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState([]);
-  const [showAddTask, setShowAddTask] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [showCreateTask, setShowCreateTask] = useState(false);
+  const [activeTab, setActiveTab] = useState('tasks');
+  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
 
   useEffect(() => {
-    loadTasks();
-  }, []);
+    const userData = JSON.parse(sessionStorage.getItem('user'));
+    setUser(userData);
+    
+    if (activeTab === 'tasks') {
+      loadTasks();
+    }
+  }, [activeTab]);
 
   const loadTasks = async () => {
     setLoading(true);
-    setError('');
-    
     try {
-      const result = await getUserTasks(); 
-      
-      if (result.success && result.data) {
-        setTasks(result.data);
-      } else {
-        setError(result.message || 'Failed to load tasks');
+      const result = await getUserTasks();
+      if (result.success) {
+        setTasks(result.data || []);
       }
-    } catch (err) {
-      setError('Failed to connect to server');
+    } catch (error) {
+      console.error('Error loading tasks:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleTaskAdded = () => {
-    setShowAddTask(false);
-    loadTasks();
-  };
-
   const handleLogout = () => {
     sessionStorage.removeItem('accessToken');
-    sessionStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('user');
     onLogout();
   };
 
+  const handleWorkspaceSelect = (workspace) => {
+    setSelectedWorkspace(workspace);
+  };
+
+  const handleBackToWorkspaces = () => {
+    setSelectedWorkspace(null);
+  };
+
+  // If a workspace is selected, show WorkspacePage
+  if (selectedWorkspace) {
+    return (
+      <WorkspacePage 
+        workspace={selectedWorkspace}
+        onBack={handleBackToWorkspaces}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <h1 className="text-2xl font-bold text-gray-900">TeamFlow</h1>
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">TeamFlow</h1>
+              <p className="text-sm text-gray-600">Welcome back, {user?.firstName}!</p>
+            </div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
             >
               <LogOut size={20} />
-              <span>Logout</span>
+              Logout
             </button>
           </div>
         </div>
-      </nav>
+      </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-gray-900">My Tasks</h2>
-          {!showAddTask && (
+      {/* Navigation Tabs */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex gap-4">
             <button
-              onClick={() => setShowAddTask(true)}
-              className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+              onClick={() => setActiveTab('tasks')}
+              className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium transition-colors ${
+                activeTab === 'tasks'
+                  ? 'border-indigo-600 text-indigo-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
+              }`}
             >
-              <Plus size={20} />
-              <span>Add Task</span>
+              <CheckSquare size={20} />
+              My Tasks
             </button>
-          )}
+            <button
+              onClick={() => setActiveTab('workspaces')}
+              className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium transition-colors ${
+                activeTab === 'workspaces'
+                  ? 'border-indigo-600 text-indigo-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Users size={20} />
+              Workspaces
+            </button>
+          </div>
         </div>
+      </div>
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg">
-            {error}
-          </div>
-        )}
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        {activeTab === 'tasks' ? (
+          <>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">My Tasks</h2>
+                <p className="text-gray-600 mt-1">
+                  {tasks.length} task{tasks.length !== 1 ? 's' : ''} total
+                </p>
+              </div>
+              <button
+                onClick={() => setShowCreateTask(true)}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                + New Task
+              </button>
+            </div>
 
-        {showAddTask && (
-          <div className="mb-6">
-            <AddTaskForm
-              onTaskAdded={handleTaskAdded}
-              onCancel={() => setShowAddTask(false)}
-            />
-          </div>
-        )}
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+              </div>
+            ) : (
+              <TaskList 
+                tasks={tasks} 
+                onTaskUpdated={loadTasks}
+              />
+            )}
 
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-            <p className="mt-4 text-gray-600">Loading tasks...</p>
-          </div>
+            {showCreateTask && (
+              <AddTaskForm
+                onClose={() => setShowCreateTask(false)}
+                onTaskAdded={loadTasks}
+              />
+            )}
+          </>
         ) : (
-          <TaskList tasks={tasks} onTaskUpdated={loadTasks} />
+          <WorkspaceList onWorkspaceSelect={handleWorkspaceSelect} />
         )}
       </main>
     </div>

@@ -1,69 +1,44 @@
-import axiosInstance from './axiosConfig';
-
+import api from './axiosConfig';
 
 
 // Get user's tasks
 export const getUserTasks = async () => {
   try {
-    const response = await axiosInstance.get('/users/tasks/my');
-    return {
-      success: true,
-      data: response.data.data,
-    };
+    const response = await api.get('/users/tasks/my');
+    return response.data;
   } catch (error) {
-    return {
-      success: false,
-      message: error.response?.data?.message || 'Failed to fetch tasks',
-    };
+    console.error('Error fetching tasks:', error);
+    throw error;
   }
 };
 
 // Add new task
 export const addTask = async (taskData) => {
   try {
-    const response = await axiosInstance.post('/tasks', taskData);
-    return {
-      success: true,
-      data: response.data.data,
-      message: response.data.message,
-    };
+    const response = await api.post('/tasks', taskData);
+    return response.data;
   } catch (error) {
+    console.error('Error creating task:', error);
     return {
       success: false,
-      message: error.response?.data?.message || 'Failed to add task',
+      message: error.response?.data?.message || 'Failed to create task'
     };
   }
 };
 
-// Update task
-export const updateTask = async (taskId, taskData) => {
+// Update task status
+export const updateTaskStatus = async (taskId, status) => {
   try {
-    const response = await axiosInstance.put(`/tasks/${taskId}`, taskData);
-    return {
-      success: true,
-      data: response.data.data,
-      message: response.data.message,
-    };
+    const response = await api.put('/tasks/status', {
+      taskId,
+      status
+    });
+    return response.data;
   } catch (error) {
+    console.error('Error updating task status:', error);
     return {
       success: false,
-      message: error.response?.data?.message || 'Failed to update task',
-    };
-  }
-};
-
-// Delete task
-export const deleteTask = async (taskId) => {
-  try {
-    const response = await axiosInstance.delete(`/tasks/${taskId}`);
-    return {
-      success: true,
-      message: response.data.message,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: error.response?.data?.message || 'Failed to delete task',
+      message: error.response?.data?.message || 'Failed to update task status'
     };
   }
 };
