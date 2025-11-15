@@ -31,7 +31,7 @@ public class TaskService
 
         var task = _mapper.Map<UserTask>(taskDTO);
         task.OwnerId = userId;
-        task.AssigneeId = userId;
+        task.AssigneeId = taskDTO.AssigneeId ?? userId;
         task.ProjectId = taskDTO.ProjectId;
         task.CreatedAt = DateTime.UtcNow;
         task.UpdatedAt = DateTime.UtcNow;
@@ -98,6 +98,35 @@ public class TaskService
         await _taskRepository.SaveChangesAsync();
     }
 
+    public async Task UpdateTaskAsync(UpdateTaskDto dto)
+    {
+        var task = await GetAndAuthorizeTaskAsync(dto.Id);
+        
+        task.Title = dto.Title;
+        task.Description = dto.Description;
+        task.Status = dto.Status;
+        task.Priority = dto.Priority;
+        
+        if (dto.Deadline.HasValue)
+        {
+            task.Deadline = dto.Deadline.Value;
+        }
+        
+        if (dto.AssigneeId.HasValue)
+        {
+            await _userValidator.ActiveUserAsync(dto.AssigneeId.Value);
+            task.AssigneeId = dto.AssigneeId;
+        }
+        
+        if (dto.ProjectId.HasValue)
+        {
+            task.ProjectId = dto.ProjectId;
+        }
+        
+        task.UpdatedAt = DateTime.UtcNow;
+        await _taskRepository.SaveChangesAsync();
+    }
+
     public async Task DeleteTaskAsync(Guid taskId)
     {
         var task = await GetAndAuthorizeTaskAsync(taskId);
@@ -108,7 +137,7 @@ public class TaskService
     // loads task and applies authorization
     private async Task<UserTask> GetAndAuthorizeTaskAsync(Guid taskId, bool requireModify = true)
     {
-        var task = await _taskRepository.GetByIdAsync(taskId); 
+        var task = await _taskRepository.GetByIdAsync(taskId);
 
         if (requireModify)
             await _taskAuthorizer.EnsureCanModifyAsync(task);
@@ -117,4 +146,5 @@ public class TaskService
 
         return task;
     }
+    
 }

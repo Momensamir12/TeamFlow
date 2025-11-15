@@ -1,10 +1,22 @@
 import React, { useState } from 'react';
 import TaskCard from './TaskCard';
-import TaskModal from './TaskModal';
+import TaskDetailsModal from './TaskDetailsModal';
 import { TASK_STATUS } from '../../constants/config';
 
 function TaskList({ tasks, onTaskUpdated }) {
   const [selectedTask, setSelectedTask] = useState(null);
+
+  // Get current user ID
+  let currentUserId = null;
+  try {
+    const userStr = sessionStorage.getItem('user');
+    if (userStr) {
+      const userData = JSON.parse(userStr);
+      currentUserId = userData?.id || null;
+    }
+  } catch (error) {
+    console.error('Error parsing user data:', error);
+  }
 
   // Group tasks by status
   const todoTasks = tasks.filter(t => t.status === TASK_STATUS.TODO);
@@ -18,6 +30,15 @@ function TaskList({ tasks, onTaskUpdated }) {
 
   const handleCloseModal = () => {
     setSelectedTask(null);
+  };
+
+  const canEdit = (task) => {
+    // Both assignee and owner can edit status/priority
+    return task.assigneeId === currentUserId || task.ownerId === currentUserId;
+  };
+
+  const canDelete = (task) => {
+    return task.ownerId === currentUserId;
   };
 
   const TaskSection = ({ title, tasks, bgColor, statusColor }) => {
@@ -83,10 +104,16 @@ function TaskList({ tasks, onTaskUpdated }) {
 
       {/* Task Detail Modal */}
       {selectedTask && (
-        <TaskModal 
+        <TaskDetailsModal 
           task={selectedTask}
           onClose={handleCloseModal}
-          onTaskUpdated={onTaskUpdated}
+          onTaskUpdated={() => {
+            onTaskUpdated();
+            handleCloseModal();
+          }}
+          canEdit={canEdit(selectedTask)}
+          canDelete={canDelete(selectedTask)}
+          projectMembers={[]}
         />
       )}
     </>

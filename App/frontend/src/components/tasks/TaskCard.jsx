@@ -1,8 +1,8 @@
 import React from 'react';
-import { Calendar, Clock, AlertCircle, CheckCircle, Circle, Loader } from 'lucide-react';
+import { Calendar, Clock, AlertCircle, CheckCircle, Circle, Loader, Edit2 } from 'lucide-react';
 import { getStatusName, getPriorityName, getStatusColor, getPriorityColor, TASK_STATUS } from '../../constants/config';
 
-function TaskCard({ task, onClick }) {
+function TaskCard({ task, onClick, onEdit, onUpdate, canEdit }) {
   const getStatusIcon = (status) => {
     switch (status) {
       case TASK_STATUS.TODO:
@@ -30,16 +30,30 @@ function TaskCard({ task, onClick }) {
 
   return (
     <div 
-      onClick={onClick}
       className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md hover:border-indigo-300 transition-all cursor-pointer"
+      onClick={onClick}
     >
       <div className="flex items-start justify-between mb-3">
         <h3 className="text-lg font-semibold text-gray-900 flex-1">
           {task.title}
         </h3>
-        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(task.priority)}`}>
-          {getPriorityName(task.priority)}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(task.priority)}`}>
+            {getPriorityName(task.priority)}
+          </span>
+          {canEdit && onEdit && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(task);
+              }}
+              className="p-1.5 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 rounded transition-colors"
+              title="Edit task"
+            >
+              <Edit2 size={16} />
+            </button>
+          )}
+        </div>
       </div>
 
       {task.description && (

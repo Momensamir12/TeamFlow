@@ -26,6 +26,20 @@ export const addTask = async (taskData) => {
   }
 };
 
+// Update task
+export const updateTask = async (taskData) => {
+  try {
+    const response = await api.put('/tasks', taskData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating task:', error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to update task'
+    };
+  }
+};
+
 // Update task status
 export const updateTaskStatus = async (taskId, status) => {
   try {
@@ -39,6 +53,20 @@ export const updateTaskStatus = async (taskId, status) => {
     return {
       success: false,
       message: error.response?.data?.message || 'Failed to update task status'
+    };
+  }
+};
+
+// Delete task
+export const deleteTask = async (taskId) => {
+  try {
+    const response = await api.delete(`/tasks/${taskId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to delete task'
     };
   }
 };

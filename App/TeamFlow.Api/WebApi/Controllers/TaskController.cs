@@ -7,7 +7,7 @@ using App.Application.Dto;
 
 namespace App.Api.Controllers;
 
-[Authorize]
+[Authorize(Policy = "EmailVerified")]
 [Route("api/tasks")]
 [ApiController]
 public class TaskController : ControllerBase
@@ -43,6 +43,13 @@ public class TaskController : ControllerBase
     {
         await _taskService.UpdateTaskStatusAsync(dto);
         return Ok(ApiResponse<string>.SuccessResponse("", "Task status updated successfully"));
+    }
+
+    [HttpPut]
+    public async Task<ActionResult<ApiResponse<string>>> UpdateTask(UpdateTaskDto dto)
+    {
+        await _taskService.UpdateTaskAsync(dto);
+        return Ok(ApiResponse<string>.SuccessResponse("", "Task updated successfully"));
     }
 
     [HttpPut("title")]

@@ -14,5 +14,4 @@ public class ProjectDetailsDto
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public List<ProjectMemberDto> Members { get; set; } = new();
-    public List<UserTaskDto> Tasks { get; set; } = new();
 }

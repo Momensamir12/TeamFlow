@@ -10,6 +10,9 @@ using App.Infrastructure.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using App.Application.Interfaces;
+using App.Application.Common;
+using App.Application.Services;
 
 namespace App.Infrastructure.Authentication.Service;
 
@@ -18,15 +21,24 @@ public class AuthenticationService
     private readonly ISecurityUserRepository _securityUserRepository;
     private readonly JwtSettings _jwtSettings;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IEmailService _emailService;
+    private readonly IConfiguration _configuration;
+    private readonly TemplateRenderer _templateRenderer;
 
     public AuthenticationService(
         ISecurityUserRepository securityUserRepository,
         IOptions<JwtSettings> jwtOptions,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IEmailService emailService,
+        IConfiguration configuration,
+        TemplateRenderer templateRenderer)
     {
         _securityUserRepository = securityUserRepository;
         _jwtSettings = jwtOptions.Value;
         _httpContextAccessor = httpContextAccessor;
+        _emailService = emailService;
+        _configuration = configuration;
+        _templateRenderer = templateRenderer;
     }
 
     public async Task<SecurityUser?> RegisterUserAsync(RegisterRequestDTO request, Guid userId)
@@ -34,12 +46,17 @@ public class AuthenticationService
         if (await _securityUserRepository.UsernameExistsAsync(request.Username))
             throw new UsernameExistsException();
 
+        var verificationToken = TokenGenerator.GenerateSecureToken();
+
         var user = new SecurityUser
         {
             Id = userId,
             Username = request.Username,
             Email = request.Email,
             IsActive = true,
+            IsEmailVerified = false,
+            EmailVerificationToken = verificationToken,
+            EmailVerificationTokenExpiry = DateTime.UtcNow.AddHours(24),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -47,6 +64,20 @@ public class AuthenticationService
 
         await _securityUserRepository.AddAsync(user);
         await _securityUserRepository.SaveChangesAsync();
+
+        // Send verification email
+        var frontendUrl = _configuration["AppSettings:FrontendUrl"];
+        var verificationLink = $"{frontendUrl}/verify-email?token={verificationToken}";
+        
+        var emailBody = _templateRenderer.Render("EmailVerification", new Dictionary<string, string>
+        {
+            { "Title", "Welcome to TeamFlow!" },
+            { "Username", user.Username },
+            { "Message", "Thank you for signing up! Please verify your email address to get started with TeamFlow." },
+            { "VerificationLink", verificationLink }
+        });
+
+        await _emailService.SendEmailAsync(user.Email, "Verify Your Email - TeamFlow", emailBody, true);
 
         return user;
     }
@@ -93,7 +124,11 @@ public class AuthenticationService
         return new TokenResponseDTO
         {
             AccessToken = CreateToken(user),
-            RefreshToken = await GenerateAndSaveRefreshToken(user)
+            RefreshToken = await GenerateAndSaveRefreshToken(user),
+            UserId = user.Id,
+            UserName = user.Username,
+            Email = user.Email,
+            IsEmailVerified = user.IsEmailVerified
         };
     }
 
@@ -102,7 +137,8 @@ public class AuthenticationService
         var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim("IsEmailVerified", user.IsEmailVerified.ToString())
             };
 
         if (user.Roles != null)
@@ -168,6 +204,63 @@ public class AuthenticationService
             return null;
 
         return Guid.TryParse(userIdClaim.Value, out var userId) ? userId : null;
+    }
+
+    public async Task<Result> VerifyEmailAsync(string token)
+    {
+        var user = await _securityUserRepository.GetByEmailVerificationTokenAsync(token);
+        
+        if (user == null)
+            return Result.Failure("Invalid verification token");
+
+        if (user.EmailVerificationTokenExpiry < DateTime.UtcNow)
+            return Result.Failure("Verification token has expired");
+
+        if (user.IsEmailVerified)
+            return Result.Failure("Email is already verified");
+
+        user.IsEmailVerified = true;
+        user.EmailVerificationToken = null;
+        user.EmailVerificationTokenExpiry = null;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await _securityUserRepository.SaveChangesAsync();
+
+        return Result.Success();
+    }
+
+    public async Task<Result> ResendVerificationEmailAsync(string email)
+    {
+        var user = await _securityUserRepository.GetByEmailAsync(email);
+        
+        if (user == null)
+            return Result.Failure("User not found");
+
+        if (user.IsEmailVerified)
+            return Result.Failure("Email is already verified");
+
+        var verificationToken = TokenGenerator.GenerateSecureToken();
+        user.EmailVerificationToken = verificationToken;
+        user.EmailVerificationTokenExpiry = DateTime.UtcNow.AddHours(24);
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await _securityUserRepository.SaveChangesAsync();
+
+        // Send verification email
+        var frontendUrl = _configuration["AppSettings:FrontendUrl"];
+        var verificationLink = $"{frontendUrl}/verify-email?token={verificationToken}";
+        
+        var emailBody = _templateRenderer.Render("EmailVerification", new Dictionary<string, string>
+        {
+            { "Title", "Verify Your Email" },
+            { "Username", user.Username },
+            { "Message", "You requested a new verification email. Click the button below to verify your email address:" },
+            { "VerificationLink", verificationLink }
+        });
+
+        await _emailService.SendEmailAsync(user.Email, "Verify Your Email - TeamFlow", emailBody, true);
+
+        return Result.Success();
     }
 }
 

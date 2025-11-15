@@ -37,4 +37,26 @@ public class AuthController : ControllerBase
 
         return Ok(ApiResponse<TokenResponseDTO>.SuccessResponse(result, "Token refreshed successfully"));
     }
+
+    [HttpPost("verify-email")]
+    public async Task<ActionResult<ApiResponse<string>>> VerifyEmail([FromBody] VerifyEmailRequestDTO request)
+    {
+        var result = await _authService.VerifyEmailAsync(request.Token);
+        
+        if (!result.Succeeded)
+            return BadRequest(ApiResponse<string>.FailureResponse(result.Error ?? "Email verification failed"));
+
+        return Ok(ApiResponse<string>.SuccessResponse("", "Email verified successfully"));
+    }
+
+    [HttpPost("resend-verification")]
+    public async Task<ActionResult<ApiResponse<string>>> ResendVerification([FromBody] ResendVerificationRequestDTO request)
+    {
+        var result = await _authService.ResendVerificationEmailAsync(request.Email);
+        
+        if (!result.Succeeded)
+            return BadRequest(ApiResponse<string>.FailureResponse(result.Error ?? "Failed to resend verification email"));
+
+        return Ok(ApiResponse<string>.SuccessResponse("", "Verification email sent successfully"));
+    }
 }

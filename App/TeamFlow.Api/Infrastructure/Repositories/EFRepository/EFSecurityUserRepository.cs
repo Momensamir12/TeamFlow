@@ -19,6 +19,12 @@ namespace App.Infrastructure.Auth.Repositories
         public Task<SecurityUser?> GetByIdAsync(Guid id) =>
             _context.SecurityUsers.FindAsync(id).AsTask();
 
+        public async Task<SecurityUser?> GetByEmailAsync(string email) =>
+            await _context.SecurityUsers.FirstOrDefaultAsync(u => u.Email == email);
+
+        public async Task<SecurityUser?> GetByEmailVerificationTokenAsync(string token) =>
+            await _context.SecurityUsers.FirstOrDefaultAsync(u => u.EmailVerificationToken == token);
+
         public Task<bool> UsernameExistsAsync(string username) =>
             _context.SecurityUsers.AnyAsync(u => u.Username == username);
 

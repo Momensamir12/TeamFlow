@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace App.Api.Controllers;
 
-[Authorize]
+[Authorize(Policy = "EmailVerified")]
 [Route("api/workspaces")]
 [ApiController]
 public class WorkspaceController : ControllerBase

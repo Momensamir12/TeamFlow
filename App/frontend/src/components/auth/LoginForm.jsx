@@ -16,9 +16,33 @@ function LoginForm({ onSuccess, onSwitchToRegister }) {
       const result = await loginUser(formData.username, formData.password);
       
       if (result.success && result.data) {
+        // Save invitation token before clearing session
+        const savedInvitationToken = sessionStorage.getItem('invitationToken');
+        
+        // Clear all cached data from previous session
+        sessionStorage.clear();
+        
+        // Store tokens
         sessionStorage.setItem('accessToken', result.data.accessToken);
         sessionStorage.setItem('refreshToken', result.data.refreshToken);
-        onSuccess();
+        
+        // Store user details
+        const userData = {
+          id: result.data.userId,
+          username: result.data.userName,
+          email: result.data.email
+        };
+        sessionStorage.setItem('user', JSON.stringify(userData));
+        
+        // Store email verification status
+        sessionStorage.setItem('emailVerified', result.data.isEmailVerified.toString());
+        
+        // Restore invitation token if it existed
+        if (savedInvitationToken) {
+          sessionStorage.setItem('invitationToken', savedInvitationToken);
+        }
+        
+        onSuccess(result.data.isEmailVerified);
       } else {
         setError(result.message || 'Login failed');
       }

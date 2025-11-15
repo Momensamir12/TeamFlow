@@ -18,7 +18,7 @@ public class InvitationService
     private readonly IUserRepository _userRepository;
     private readonly TemplateRenderer _templateRenderer;
     private readonly ILogger<InvitationService> _logger;
-    private readonly string _backendUrl;
+    private readonly string _frontendUrl;
 
     public InvitationService(
         IEmailService emailService,
@@ -35,7 +35,7 @@ public class InvitationService
         _userRepository = userRepository;
         _templateRenderer = templateRenderer;
         _logger = logger;
-        _backendUrl = appSettings.Value.BackendUrl.TrimEnd('/');
+        _frontendUrl = appSettings.Value.FrontendUrl.TrimEnd('/');
     }
 
     public async Task SendInvitationToWorkspaceAsync(InvitationRequestDto dto, Guid currentUserId)
@@ -75,7 +75,7 @@ public class InvitationService
             await _invitationRepository.SaveChangesAsync();
             _logger.LogInformation("Invitation saved successfully with ID: {InvitationId}", invitation.Id);
 
-            var invitationLink = $"{_backendUrl}/api/invitations/accept?token={token}";
+            var invitationLink = $"{_frontendUrl}/accept-invitation?token={token}";
             _logger.LogInformation("Generated invitation link: {InvitationLink}", invitationLink);
 
             _logger.LogInformation("Fetching inviter user with ID: {UserId}", currentUserId);
@@ -175,6 +175,38 @@ public class InvitationService
         {
             _logger.LogError(ex, "Error occurred while accepting invitation. Token: {Token}, UserId: {UserId}", 
                 token, userId);
+            throw;
+        }
+    }
+
+    public async Task<InvitationDetailsDto> GetInvitationDetailsAsync(string token)
+    {
+        try
+        {
+            _logger.LogInformation("Fetching invitation details for token: {Token}", token);
+
+            var invitation = await _invitationRepository.GetByTokenAsync(token);
+            if (invitation == null)
+            {
+                _logger.LogWarning("Invitation not found for token: {Token}", token);
+                throw new KeyNotFoundException("Invitation not found");
+            }
+
+            var workspace = await _workspaceRepository.GetByIdAsync(invitation.WorkspaceId);
+
+            return new InvitationDetailsDto
+            {
+                WorkspaceName = workspace.Name,
+                Role = (int)invitation.Role,
+                RoleName = invitation.Role.ToString(),
+                ExpiresAt = invitation.ExpiresAt,
+                IsExpired = invitation.ExpiresAt < DateTime.UtcNow,
+                IsAccepted = invitation.IsAccepted
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while fetching invitation details. Token: {Token}", token);
             throw;
         }
     }

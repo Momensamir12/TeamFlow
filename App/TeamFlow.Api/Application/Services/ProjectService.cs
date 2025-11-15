@@ -10,6 +10,7 @@ public class ProjectService
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IWorkspaceRepository _workspaceRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IWorkspaceAuthorizer _workspaceAuthorizer;
     private readonly IProjectAuthorizer _projectAuthorizer;
     private readonly ITaskRepository _taskRepository;
@@ -18,6 +19,7 @@ public class ProjectService
     public ProjectService(
         IProjectRepository projectRepository,
         IWorkspaceRepository workspaceRepository,
+        IUserRepository userRepository,
         ITaskRepository taskRepository,
         IWorkspaceAuthorizer workspaceAuthorizer,
         IProjectAuthorizer projectAuthorizer,
@@ -25,6 +27,7 @@ public class ProjectService
     {
         _projectRepository = projectRepository;
         _workspaceRepository = workspaceRepository;
+        _userRepository = userRepository;
         _taskRepository = taskRepository;
         _workspaceAuthorizer = workspaceAuthorizer;
         _projectAuthorizer = projectAuthorizer;
@@ -145,8 +148,24 @@ public class ProjectService
         var project = await _projectRepository.GetByIdAsync(projectId);
         await _projectAuthorizer.EnsureHasAccessAsync(project);
         
+        var workspace = await _workspaceRepository.GetByIdAsync(project.WorkspaceId);
         var tasks = await _taskRepository.GetProjectTasksAsync(projectId);
         var members = await _projectRepository.GetProjectMembersAsync(projectId);
+        
+        var memberDtos = new List<ProjectMemberDto>();
+        foreach (var member in members)
+        {
+            var user = await _userRepository.GetByIdAsync(member.UserId);
+            memberDtos.Add(new ProjectMemberDto
+            {
+                Id = member.Id,
+                UserId = member.UserId,
+                UserName = user?.FirstName ?? string.Empty,
+                UserEmail = user?.Email ?? string.Empty,
+                Role = (int)member.Role,  // Cast enum to int
+                AddedAt = member.AddedAt
+            });
+        }
         
         return new ProjectDetailsDto
         {
@@ -154,8 +173,13 @@ public class ProjectService
             Name = project.Name,
             Description = project.Description,
             WorkspaceId = project.WorkspaceId,
-            Tasks = tasks.Select(t => new UserTaskDto { Id = t.Id, Title = t.Title, Status = ((int)t.Status)}).ToList(),
-            Members = members.Select(m => new ProjectMemberDto { UserId = m.UserId, Role = m.Role }).ToList()
+            WorkspaceName = workspace?.Name ?? string.Empty,
+            CreatedByUserId = project.CreatedByUserId,
+            CreatedByUserName = string.Empty, // TODO: Fetch creator name if needed
+            IsArchived = project.IsArchived,
+            CreatedAt = project.CreatedAt,
+            UpdatedAt = project.UpdatedAt,
+            Members = memberDtos
         };
     }
 
@@ -174,5 +198,36 @@ public class ProjectService
             CreatedAt = p.CreatedAt,
 WorkspaceId = p.WorkspaceId
         }).ToList();
+    }
+
+    public async Task<int> GetUserRoleInProjectAsync(Guid projectId, Guid userId)
+    {
+        await _userValidator.ActiveUserAsync(userId);
+
+        var member = await _projectRepository.GetMemberAsync(projectId, userId);
+        if (member == null)
+        {
+            throw new InvalidOperationException("User is not a member of this project");
+        }
+
+        return (int)member.Role;
+    }
+    public async Task<List<UserTaskDto>> GetProjectTasksAsync (Guid projectId)
+    {
+        var tasks = await _taskRepository.GetProjectTasksAsync(projectId);
+        var tasksDto = tasks.Select(t => new UserTaskDto 
+        { 
+            Id = t.Id, 
+            Title = t.Title, 
+            Description = t.Description,
+            Status = (int)t.Status,
+            Priority = (int)t.Priority,
+            Deadline = t.Deadline,
+            AssigneeId = t.AssigneeId,
+            OwnerId = t.OwnerId,
+            ProjectId = t.ProjectId
+        }).ToList();
+
+        return tasksDto;
     }
 }

@@ -7,25 +7,22 @@
         .header { background-color: #4f46e5; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
         .content { background-color: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
         .button { display: inline-block; background-color: #4f46e5; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
-        .role-badge { background-color: #e0e7ff; color: #4338ca; padding: 4px 12px; border-radius: 4px; font-weight: 600; }
         .footer { text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px; }
     </style>
 </head>
 <body>
     <div class='container'>
         <div class='header'>
-            <h1>You're Invited!</h1>
+            <h1>{{Title}}</h1>
         </div>
         <div class='content'>
-            <h2>Join {{WorkspaceName}}</h2>
-            <p>You've been invited to collaborate on <strong>{{WorkspaceName}}</strong> workspace on TeamFlow.</p>
-            <p>Your assigned role: <span class='role-badge'>{{Role}}</span></p>
-            <p>Click the button below to accept the invitation:</p>
-            <a href='{{InvitationLink}}' class='button'>Accept Invitation</a>
+            <h2>Hi {{Username}},</h2>
+            <p>{{Message}}</p>
+            <a href='{{VerificationLink}}' class='button'>Verify Email Address</a>
             <p>Or copy and paste this link into your browser:</p>
-            <p style='word-break: break-all; color: #4f46e5;'>{{InvitationLink}}</p>
-            <p><strong>This invitation will expire in 7 days.</strong></p>
-            <p>If you don't have a TeamFlow account, you'll be prompted to create one after accepting the invitation.</p>
+            <p style='word-break: break-all; color: #e1e0e7;'>{{VerificationLink}}</p>
+            <p><strong>This link will expire in 24 hours.</strong></p>
+            <p>If you didn't create an account with TeamFlow, you can safely ignore this email.</p>
         </div>
         <div class='footer'>
             <p>&copy; 2025 TeamFlow. All rights reserved.</p>

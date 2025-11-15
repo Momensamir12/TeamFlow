@@ -83,3 +83,31 @@ export const removeProjectMember = async (projectId, memberUserId) => {
     };
   }
 };
+
+// Get current user's role in project
+export const getMyProjectRole = async (projectId) => {
+  try {
+    const response = await api.get(`/projects/${projectId}/my-role`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user role:', error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to fetch user role'
+    };
+  }
+};
+
+// Get project tasks
+export const getProjectTasks = async (projectId) => {
+  try {
+    const response = await api.get(`/projects/${projectId}/tasks`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching project tasks:', error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to fetch project tasks'
+    };
+  }
+};

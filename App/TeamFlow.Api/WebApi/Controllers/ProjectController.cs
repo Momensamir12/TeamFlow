@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace App.Api.Controllers;
 
-[Authorize]
+[Authorize(Policy = "EmailVerified")]
 [Route("api/projects")]
 [ApiController]
 public class ProjectController : ControllerBase
@@ -67,5 +67,19 @@ public class ProjectController : ControllerBase
         var userId = _currentUserService.UserId;
         await _projectService.RemoveMemberFromProjectAsync(projectId, memberUserId, userId);
         return Ok(ApiResponse<string>.SuccessResponse("", "Member removed from project successfully"));
+    }
+
+    [HttpGet("{projectId}/my-role")]
+    public async Task<ActionResult<ApiResponse<int>>> GetMyRole(Guid projectId)
+    {
+        var userId = _currentUserService.UserId;
+        var role = await _projectService.GetUserRoleInProjectAsync(projectId, userId);
+        return Ok(ApiResponse<int>.SuccessResponse(role, "User role retrieved successfully"));
+    }
+    [HttpGet("{projectId}/tasks")]
+    public async Task<ActionResult<ApiResponse<List<UserTaskDto>>>> GetProjectTasks(Guid projectId)
+    {
+        var tasks = await _projectService.GetProjectTasksAsync(projectId);
+        return Ok(ApiResponse<List<UserTaskDto>>.SuccessResponse(tasks, ""));
     }
 }

@@ -160,10 +160,55 @@ export const getMyWorkspaceRole = async (workspaceId) => {
     const response = await api.get(`/workspaces/${workspaceId}/my-role`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching user role:', error);
+    console.error('Error fetching workspace role:', error);
     return {
       success: false,
-      message: error.response?.data?.message || 'Failed to fetch user role'
+      message: error.response?.data?.message || 'Failed to fetch workspace role'
+    };
+  }
+};
+
+// Invitation APIs
+export const sendInvitationEmail = async (workspaceId, email, role) => {
+  try {
+    const response = await api.post('/invitations/send', {
+      workspaceId,
+      email,
+      role
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error sending invitation:', error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to send invitation'
+    };
+  }
+};
+
+export const validateInvitation = async (token) => {
+  try {
+    const response = await api.get(`/invitations/validate?token=${token}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error validating invitation:', error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to validate invitation'
+    };
+  }
+};
+
+export const acceptInvitation = async (token) => {
+  try {
+    const response = await api.post('/invitations/accept', { token });
+    return response.data;
+  } catch (error) {
+    console.error('Error accepting invitation:', error);
+    console.error('Error response:', error.response);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to accept invitation'
     };
   }
 };

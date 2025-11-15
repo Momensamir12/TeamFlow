@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { registerUser } from '../../api/authenticationApi';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, Mail } from 'lucide-react';
 
 function RegisterForm({ onSuccess, onSwitchToLogin }) {
   const [formData, setFormData] = useState({
@@ -12,6 +12,7 @@ function RegisterForm({ onSuccess, onSwitchToLogin }) {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,8 +30,7 @@ function RegisterForm({ onSuccess, onSwitchToLogin }) {
       const result = await registerUser(formData);
       
       if (result.success) {
-        alert('Registration successful! Please login with your credentials.');
-        onSuccess();
+        setShowSuccessMessage(true);
       } else {
         setError(result.message || result.errors?.join(', ') || 'Registration failed');
       }
@@ -47,16 +47,37 @@ function RegisterForm({ onSuccess, onSwitchToLogin }) {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
-      <p className="text-gray-600 mb-6">Sign up to get started</p>
-
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
-          {error}
+      {showSuccessMessage ? (
+        <div className="text-center">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Mail className="text-green-600" size={40} />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Check Your Email!
+          </h2>
+          <p className="text-gray-600 mb-6">
+            We've sent a verification link to <strong>{formData.email}</strong>. 
+            Please check your inbox and verify your email to complete registration.
+          </p>
+          <button
+            onClick={onSwitchToLogin}
+            className="w-full px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+          >
+            Go to Login
+          </button>
         </div>
-      )}
+      ) : (
+        <>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
+          <p className="text-gray-600 mb-6">Sign up to get started</p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -157,6 +178,8 @@ function RegisterForm({ onSuccess, onSwitchToLogin }) {
           Sign in
         </button>
       </p>
+        </>
+      )}
     </div>
   );
 }

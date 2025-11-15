@@ -88,6 +88,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Add Authorization Policies
 builder.Services.AddAuthorization(options =>
 {
+    options.AddPolicy("EmailVerified", policy =>
+        policy.Requirements.Add(new EmailVerifiedRequirement()));
+
     options.AddPolicy("TaskOwner", policy =>
         policy.Requirements.Add(new TaskOwnerRequirement()));
     
@@ -114,6 +117,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 // Register Authorization Handlers
+builder.Services.AddScoped<IAuthorizationHandler, EmailVerifiedHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, TaskOwnerHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, TaskAccessHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, WorkspaceAdminHandler>();

@@ -35,7 +35,7 @@ public class UserController : ControllerBase
         return Ok(ApiResponse<string>.SuccessResponse("", "User registered successfully"));
     }
 
-    [Authorize]
+    [Authorize(Policy = "EmailVerified")]
     [HttpGet("tasks/my")]
     public async Task<ActionResult<ApiResponse<List<UserTaskDto>>>> GetMyTasks()
     {

@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Folder, Users, ListTodo, Settings } from 'lucide-react';
-import { getProjectDetails } from '../api/projectApi';
+import { getProjectDetails, getMyProjectRole } from '../api/projectApi';
+import { getWorkspaceById } from '../api/workspaceApi';
 import { getProjectRoleName, canEditProject } from '../constants/config';
+import ProjectMembersTab from '../components/projects/ProjectMembersTab';
+import ProjectTasksTab from '../components/projects/ProjectTasksTab';
 
 function ProjectPage({ project, onBack }) {
   const [projectData, setProjectData] = useState(project);
+  const [workspaceMembers, setWorkspaceMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('tasks');
   const [userRole, setUserRole] = useState(null);
@@ -21,16 +25,41 @@ function ProjectPage({ project, onBack }) {
     
     setLoading(true);
     try {
-      const result = await getProjectDetails(project.id);
-      if (result.success) {
-        setProjectData(result.data);
-        // Find current user's role
-        const userStr = sessionStorage.getItem('user');
-        if (userStr) {
-          const currentUserId = JSON.parse(userStr).id;
-          const member = result.data.members?.find(m => m.userId === currentUserId);
-          setUserRole(member?.role ?? 0);
+      // Fetch project details and user role in parallel
+      const [projectResult, roleResult] = await Promise.all([
+        getProjectDetails(project.id),
+        getMyProjectRole(project.id)
+      ]);
+
+      console.log('Project API Result:', projectResult);
+      console.log('Role API Result:', roleResult);
+      
+      // Check if user has access to this project
+      if (!projectResult.success && projectResult.message?.includes("don't have access")) {
+        alert("You don't have access to this project");
+        onBack();
+        return;
+      }
+      
+      if (projectResult.success) {
+        setProjectData(projectResult.data);
+        
+        // Fetch workspace members if we have workspaceId
+        if (projectResult.data.workspaceId) {
+          const workspaceResult = await getWorkspaceById(projectResult.data.workspaceId);
+          if (workspaceResult.success) {
+            setWorkspaceMembers(workspaceResult.data.members || []);
+          }
         }
+      }
+
+      if (roleResult.success) {
+        const role = roleResult.data;
+        console.log('Setting User Role from API:', role);
+        setUserRole(role);
+      } else {
+        console.warn('Failed to fetch user role:', roleResult.message);
+        setUserRole(0); // Default to Viewer
       }
     } catch (error) {
       console.error('Error loading project:', error);
@@ -163,25 +192,20 @@ function ProjectPage({ project, onBack }) {
       {/* Tab Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
         {activeTab === 'tasks' ? (
-          <div className="text-center py-12 bg-white rounded-lg shadow">
-            <ListTodo size={48} className="mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Project Tasks
-            </h3>
-            <p className="text-gray-600">
-              Task management for this project coming soon...
-            </p>
-          </div>
+          <ProjectTasksTab
+            projectId={projectData.id}
+            projectMembers={projectData.members || []}
+            userRole={userRole}
+            onTasksUpdated={loadProjectDetails}
+          />
         ) : (
-          <div className="text-center py-12 bg-white rounded-lg shadow">
-            <Users size={48} className="mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Project Members
-            </h3>
-            <p className="text-gray-600">
-              Member management for this project coming soon...
-            </p>
-          </div>
+          <ProjectMembersTab
+            projectId={projectData.id}
+            members={projectData.members || []}
+            workspaceMembers={workspaceMembers}
+            userRole={userRole}
+            onMembersUpdated={loadProjectDetails}
+          />
         )}
       </main>
     </div>

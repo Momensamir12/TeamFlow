@@ -1,17 +1,43 @@
 import React, { useState } from 'react';
-import { addTask } from '../../api/taskApi';
-import { TASK_STATUS, TASK_PRIORITY } from '../../constants/config';
+import { X, AlertCircle, ListTodo, ChevronDown } from 'lucide-react';
+import { addTask, updateTask } from '../../api/taskApi';
+import { TASK_STATUS, TASK_PRIORITY, getStatusName, getPriorityName } from '../../constants/config';
 
-function AddTaskForm({ onTaskAdded, onCancel }) {
+function AddTaskForm({ onTaskCreated, onClose, editingTask, projectId, projectMembers }) {
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    status: TASK_STATUS.TODO,
-    priority: TASK_PRIORITY.MEDIUM,
-    deadline: ''
+    title: editingTask?.title || '',
+    description: editingTask?.description || '',
+    status: editingTask?.status ?? TASK_STATUS.TODO,
+    priority: editingTask?.priority ?? TASK_PRIORITY.MEDIUM,
+    deadline: editingTask?.deadline ? new Date(editingTask.deadline).toISOString().split('T')[0] : '',
+    projectId: projectId || editingTask?.projectId || null,
+    assigneeId: editingTask?.assigneeId || ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
+  const [showAssigneeDropdown, setShowAssigneeDropdown] = useState(false);
+
+  const statusOptions = [
+    { value: TASK_STATUS.TODO, label: 'To Do' },
+    { value: TASK_STATUS.IN_PROGRESS, label: 'In Progress' },
+    { value: TASK_STATUS.DONE, label: 'Done' },
+    { value: TASK_STATUS.BLOCKED, label: 'Blocked' }
+  ];
+
+  const priorityOptions = [
+    { value: TASK_PRIORITY.LOW, label: 'Low' },
+    { value: TASK_PRIORITY.MEDIUM, label: 'Medium' },
+    { value: TASK_PRIORITY.HIGH, label: 'High' },
+    { value: TASK_PRIORITY.URGENT, label: 'Urgent' }
+  ];
+
+  const getAssigneeName = () => {
+    if (!formData.assigneeId) return 'Unassigned';
+    const assignee = projectMembers?.find(m => m.userId === formData.assigneeId);
+    return assignee ? `${assignee.userName} (${assignee.userEmail})` : 'Unassigned';
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,34 +47,61 @@ function AddTaskForm({ onTaskAdded, onCancel }) {
     try {
       const taskData = {
         ...formData,
-        deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null
+        deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null,
+        assigneeId: formData.assigneeId || null
       };
 
-      const result = await addTask(taskData);
+      const result = editingTask 
+        ? await updateTask({ ...taskData, id: editingTask.id })
+        : await addTask(taskData);
 
       if (result.success) {
-        onTaskAdded();
+        onTaskCreated();
+        onClose();
       } else {
-        setError(result.message || 'Failed to add task');
+        setError(result.message || `Failed to ${editingTask ? 'update' : 'add'} task`);
       }
-    } catch (err) {
-      setError('Failed to add task. Please try again.');
+    } catch {
+      setError(`Failed to ${editingTask ? 'update' : 'add'} task. Please try again.`);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">Add New Task</h2>
-
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
-          {error}
+    <div 
+      className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4"
+      style={{ zIndex: 9999 }}
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white rounded-lg shadow-2xl max-w-2xl w-full relative overflow-visible"
+        style={{ zIndex: 10000 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-indigo-100 rounded-lg">
+              <ListTodo size={24} className="text-indigo-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {editingTask ? 'Edit Task' : 'Add New Task'}
+            </h2>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X size={24} />
+          </button>
         </div>
-      )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-visible">
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <div className="flex items-center gap-2 text-red-800">
+                <AlertCircle size={20} />
+                <span className="text-sm font-medium">{error}</span>
+              </div>
+            </div>
+          )}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Task Title *
@@ -79,38 +132,68 @@ function AddTaskForm({ onTaskAdded, onCancel }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
+          <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Status
             </label>
-            <select
-              value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            <button
+              type="button"
+              onClick={() => setShowStatusDropdown(!showStatusDropdown)}
               disabled={loading}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white text-left flex items-center justify-between disabled:opacity-50"
             >
-              <option value={TASK_STATUS.TODO}>To Do</option>
-              <option value={TASK_STATUS.IN_PROGRESS}>In Progress</option>
-              <option value={TASK_STATUS.DONE}>Done</option>
-              <option value={TASK_STATUS.BLOCKED}>Blocked</option>
-            </select>
+              <span>{statusOptions.find(o => o.value === formData.status)?.label}</span>
+              <ChevronDown size={16} />
+            </button>
+            {showStatusDropdown && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                {statusOptions.map(option => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => {
+                      setFormData({ ...formData, status: option.value });
+                      setShowStatusDropdown(false);
+                    }}
+                    className="w-full px-4 py-2 text-left hover:bg-indigo-50 first:rounded-t-lg last:rounded-b-lg"
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          <div>
+          <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Priority
             </label>
-            <select
-              value={formData.priority}
-              onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            <button
+              type="button"
+              onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
               disabled={loading}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white text-left flex items-center justify-between disabled:opacity-50"
             >
-              <option value={TASK_PRIORITY.LOW}>Low</option>
-              <option value={TASK_PRIORITY.MEDIUM}>Medium</option>
-              <option value={TASK_PRIORITY.HIGH}>High</option>
-              <option value={TASK_PRIORITY.URGENT}>Urgent</option>
-            </select>
+              <span>{priorityOptions.find(o => o.value === formData.priority)?.label}</span>
+              <ChevronDown size={16} />
+            </button>
+            {showPriorityDropdown && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                {priorityOptions.map(option => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => {
+                      setFormData({ ...formData, priority: option.value });
+                      setShowPriorityDropdown(false);
+                    }}
+                    className="w-full px-4 py-2 text-left hover:bg-indigo-50 first:rounded-t-lg last:rounded-b-lg"
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div>
@@ -127,24 +210,72 @@ function AddTaskForm({ onTaskAdded, onCancel }) {
           </div>
         </div>
 
+        {/* Assignee Selection - Only show if projectMembers are provided */}
+        {projectMembers && projectMembers.length > 0 && (
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Assign To
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowAssigneeDropdown(!showAssigneeDropdown)}
+              disabled={loading}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white text-left flex items-center justify-between disabled:opacity-50"
+            >
+              <span className={formData.assigneeId ? 'text-gray-900' : 'text-gray-500'}>
+                {getAssigneeName()}
+              </span>
+              <ChevronDown size={16} />
+            </button>
+            {showAssigneeDropdown && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, assigneeId: '' });
+                    setShowAssigneeDropdown(false);
+                  }}
+                  className="w-full px-4 py-2 text-left hover:bg-indigo-50 first:rounded-t-lg"
+                >
+                  Unassigned
+                </button>
+                {projectMembers.map(member => (
+                  <button
+                    key={member.userId}
+                    type="button"
+                    onClick={() => {
+                      setFormData({ ...formData, assigneeId: member.userId });
+                      setShowAssigneeDropdown(false);
+                    }}
+                    className="w-full px-4 py-2 text-left hover:bg-indigo-50 last:rounded-b-lg"
+                  >
+                    {member.userName} ({member.userEmail})
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="flex gap-3 pt-4">
           <button
-            type="submit"
-            disabled={loading}
-            className="flex-1 bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium disabled:opacity-50"
-          >
-            {loading ? 'Adding...' : 'Add Task'}
-          </button>
-          <button
             type="button"
-            onClick={onCancel}
+            onClick={onClose}
             disabled={loading}
-            className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium disabled:opacity-50"
+            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium disabled:opacity-50"
+          >
+            {loading ? (editingTask ? 'Updating...' : 'Adding...') : (editingTask ? 'Update Task' : 'Add Task')}
+          </button>
         </div>
       </form>
+      </div>
     </div>
   );
 }

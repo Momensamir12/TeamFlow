@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { Users, Mail, Shield, MoreVertical, UserMinus, Copy, Check } from 'lucide-react';
+import { Users, Mail, Shield, MoreVertical, UserMinus, Copy, Check, ChevronDown } from 'lucide-react';
 import { getWorkspaceRoleName, getRoleColor, canManageWorkspace, WORKSPACE_ROLE } from '../../constants/config';
 import { updateMemberRole, removeMember, getWorkspaceCode } from '../../api/workspaceApi';
+import InviteByEmailModal from './InviteByEmailModal';
 
 function MembersTab({ workspaceId, members, userRole, onMembersUpdated }) {
   const [showInvite, setShowInvite] = useState(false);
+  const [showEmailInvite, setShowEmailInvite] = useState(false);
   const [inviteCode, setInviteCode] = useState('');
   const [loadingCode, setLoadingCode] = useState(false);
   const [copied, setCopied] = useState(false);
   const [processingMember, setProcessingMember] = useState(null);
+  const [roleDropdowns, setRoleDropdowns] = useState({});
 
   // Safely get current user ID
   let currentUserId = null;
@@ -46,8 +49,16 @@ function MembersTab({ workspaceId, members, userRole, onMembersUpdated }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const toggleRoleDropdown = (memberId) => {
+    setRoleDropdowns(prev => ({
+      ...prev,
+      [memberId]: !prev[memberId]
+    }));
+  };
+
   const handleRoleChange = async (memberId, newRole) => {
     setProcessingMember(memberId);
+    setRoleDropdowns(prev => ({ ...prev, [memberId]: false }));
     
     try {
       const result = await updateMemberRole(workspaceId, memberId, newRole);
@@ -60,6 +71,12 @@ function MembersTab({ workspaceId, members, userRole, onMembersUpdated }) {
       setProcessingMember(null);
     }
   };
+
+  const roleOptions = [
+    { value: WORKSPACE_ROLE.VIEWER, label: 'Viewer' },
+    { value: WORKSPACE_ROLE.MEMBER, label: 'Member' },
+    { value: WORKSPACE_ROLE.ADMIN, label: 'Admin' }
+  ];
 
   const handleRemoveMember = async (memberId) => {
     if (!confirm('Are you sure you want to remove this member?')) return;
@@ -90,13 +107,22 @@ function MembersTab({ workspaceId, members, userRole, onMembersUpdated }) {
         </div>
         
         {canManage && (
-          <button
-            onClick={handleShowInvite}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-          >
-            <Users size={20} />
-            Invite Members
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowEmailInvite(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              <Mail size={20} />
+              Invite by Email
+            </button>
+            <button
+              onClick={handleShowInvite}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors"
+            >
+              <Users size={20} />
+              Invite Code
+            </button>
+          </div>
         )}
       </div>
 
@@ -148,16 +174,31 @@ function MembersTab({ workspaceId, members, userRole, onMembersUpdated }) {
                 <div className="flex items-center gap-3">
                   {canManage && member.userId !== currentUserId ? (
                     <>
-                      <select
-                        value={member.role}
-                        onChange={(e) => handleRoleChange(member.userId, parseInt(e.target.value))}
-                        disabled={processingMember === member.userId}
-                        className={`px-3 py-1 rounded border font-medium text-sm ${getRoleColor(member.role)} disabled:opacity-50`}
-                      >
-                        <option value={WORKSPACE_ROLE.VIEWER}>Viewer</option>
-                        <option value={WORKSPACE_ROLE.MEMBER}>Member</option>
-                        <option value={WORKSPACE_ROLE.ADMIN}>Admin</option>
-                      </select>
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => toggleRoleDropdown(member.userId)}
+                          disabled={processingMember === member.userId}
+                          className={`px-3 py-1 rounded border font-medium text-sm ${getRoleColor(member.role)} disabled:opacity-50 flex items-center gap-1`}
+                        >
+                          <span>{getWorkspaceRoleName(member.role)}</span>
+                          <ChevronDown size={14} />
+                        </button>
+                        {roleDropdowns[member.userId] && (
+                          <div className="absolute z-50 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg min-w-[120px]">
+                            {roleOptions.map(option => (
+                              <button
+                                key={option.value}
+                                type="button"
+                                onClick={() => handleRoleChange(member.userId, option.value)}
+                                className="w-full px-4 py-2 text-left hover:bg-indigo-50 first:rounded-t-lg last:rounded-b-lg text-sm"
+                              >
+                                {option.label}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       <button
                         onClick={() => handleRemoveMember(member.userId)}
                         disabled={processingMember === member.userId}
@@ -185,6 +226,17 @@ function MembersTab({ workspaceId, members, userRole, onMembersUpdated }) {
           <h3 className="text-lg font-semibold text-gray-900 mb-2">No members yet</h3>
           <p className="text-gray-600">Invite people to collaborate in this workspace</p>
         </div>
+      )}
+
+      {/* Email Invitation Modal */}
+      {showEmailInvite && (
+        <InviteByEmailModal
+          workspaceId={workspaceId}
+          onClose={() => setShowEmailInvite(false)}
+          onSuccess={() => {
+            onMembersUpdated();
+          }}
+        />
       )}
     </div>
   );

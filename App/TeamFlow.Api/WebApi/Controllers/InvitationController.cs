@@ -29,12 +29,18 @@ public class InvitationController : ControllerBase
         return Ok(ApiResponse<string>.SuccessResponse("", "Invitation sent successfully"));
     }
 
-    [HttpGet("accept")]
-    [AllowAnonymous]
-    public async Task<ActionResult<ApiResponse<string>>> AcceptInvitation([FromQuery] string token)
+    [HttpPost("accept")]
+    public async Task<ActionResult<ApiResponse<string>>> AcceptInvitation([FromBody] AcceptInvitationDto dto)
     {
         var userId = _currentUserService.UserId;
-        await _invitationService.AcceptInvitationAsync(token, userId);
+        await _invitationService.AcceptInvitationAsync(dto.Token, userId);
         return Ok(ApiResponse<string>.SuccessResponse("", "Invitation accepted successfully"));
+    }
+
+    [HttpGet("validate")]
+    public async Task<ActionResult<ApiResponse<InvitationDetailsDto>>> ValidateInvitation([FromQuery] string token)
+    {
+        var details = await _invitationService.GetInvitationDetailsAsync(token);
+        return Ok(ApiResponse<InvitationDetailsDto>.SuccessResponse(details, "Invitation details retrieved"));
     }
 }
