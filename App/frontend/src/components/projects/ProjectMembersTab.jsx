@@ -3,6 +3,7 @@ import { Users, UserPlus, Shield, MoreVertical, UserMinus } from 'lucide-react';
 import { getProjectRoleName, getRoleColor, canEditProject, PROJECT_ROLE } from '../../constants/config';
 import { removeProjectMember } from '../../api/projectApi';
 import AddProjectMemberModal from './AddProjectMemberModal';
+import Dropdown, { DropdownItem } from '../common/Dropdown';
 
 function ProjectMembersTab({ projectId, members, workspaceMembers, userRole, onMembersUpdated }) {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -99,7 +100,7 @@ function ProjectMembersTab({ projectId, members, workspaceMembers, userRole, onM
           )}
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white rounded-lg shadow">
           <div className="divide-y divide-gray-200">
             {members.map(member => (
               <div 
@@ -123,27 +124,29 @@ function ProjectMembersTab({ projectId, members, workspaceMembers, userRole, onM
                   </span>
 
                   {canManage && member.userId !== currentUserId && (
-                    <div className="relative">
-                      <button
-                        onClick={() => setShowMenu(showMenu === member.userId ? null : member.userId)}
-                        className="p-1 hover:bg-gray-200 rounded transition-colors"
-                        disabled={processingMember === member.userId}
+                    <Dropdown
+                      isOpen={showMenu === member.userId}
+                      onClose={() => setShowMenu(null)}
+                      trigger={
+                        <button
+                          onClick={() => setShowMenu(showMenu === member.userId ? null : member.userId)}
+                          className="p-1 hover:bg-gray-200 rounded transition-colors"
+                          disabled={processingMember === member.userId}
+                        >
+                          <MoreVertical size={20} className="text-gray-600" />
+                        </button>
+                      }
+                    >
+                      <DropdownItem
+                        onClick={() => handleRemoveMember(member.userId)}
+                        className="text-red-600 hover:bg-red-50"
                       >
-                        <MoreVertical size={20} className="text-gray-600" />
-                      </button>
-
-                      {showMenu === member.userId && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
-                          <button
-                            onClick={() => handleRemoveMember(member.userId)}
-                            className="flex items-center gap-2 w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 transition-colors"
-                          >
-                            <UserMinus size={16} />
-                            Remove from Project
-                          </button>
+                        <div className="flex items-center gap-2">
+                          <UserMinus size={16} />
+                          Remove from Project
                         </div>
-                      )}
-                    </div>
+                      </DropdownItem>
+                    </Dropdown>
                   )}
                 </div>
               </div>

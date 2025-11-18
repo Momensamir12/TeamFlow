@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../../api/authenticationApi';
 import { LogIn } from 'lucide-react';
 
@@ -6,6 +7,7 @@ function LoginForm({ onSuccess, onSwitchToRegister }) {
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -100,6 +102,16 @@ function LoginForm({ onSuccess, onSwitchToRegister }) {
           <LogIn size={20} />
           {loading ? 'Signing in...' : 'Sign In'}
         </button>
+
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={() => navigate('/forgot-password')}
+            className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+          >
+            Forgot password?
+          </button>
+        </div>
       </form>
 
       <p className="text-center text-sm text-gray-600 mt-4">

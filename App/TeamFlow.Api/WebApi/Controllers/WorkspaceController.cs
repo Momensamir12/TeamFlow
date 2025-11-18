@@ -22,34 +22,34 @@ public class WorkspaceController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ApiResponse<string>>> CreateWorkspace(CreateWorkspaceDto dto)
+    public async Task<ActionResult<ApiResponse<string>>> CreateWorkspace(CreateWorkspaceDto dto, CancellationToken cancellationToken)
     {
         var userId = _currentUserService.UserId;
-        await _workspaceService.CreateWorkspaceAsync(dto, userId);
+        await _workspaceService.CreateWorkspaceAsync(dto, userId, cancellationToken);
         return Ok(ApiResponse<string>.SuccessResponse("", "Workspace created successfully"));
     }
 
     [HttpPut]
-    public async Task<ActionResult<ApiResponse<string>>> UpdateWorkspace(UpdateWorkspaceDto dto)
+    public async Task<ActionResult<ApiResponse<string>>> UpdateWorkspace(UpdateWorkspaceDto dto, CancellationToken cancellationToken)
     {
         var userId = _currentUserService.UserId;
-        await _workspaceService.UpdateWorkspaceAsync(dto, userId);
+        await _workspaceService.UpdateWorkspaceAsync(dto, userId, cancellationToken);
         return Ok(ApiResponse<string>.SuccessResponse("", "Workspace updated successfully"));
     }
 
     [HttpGet]
-    public async Task<ActionResult<ApiResponse<List<WorkspaceListDto>>>> GetUserWorkspaces()
+    public async Task<ActionResult<ApiResponse<List<WorkspaceListDto>>>> GetUserWorkspaces(CancellationToken cancellationToken)
     {
         var userId = _currentUserService.UserId;
-        var workspaces = await _workspaceService.GetUserWorkspacesAsync(userId);
+        var workspaces = await _workspaceService.GetUserWorkspacesAsync(userId, cancellationToken);
         return Ok(ApiResponse<List<WorkspaceListDto>>.SuccessResponse(workspaces, "Workspaces retrieved successfully"));
     }
 
     [HttpGet("{workspaceId}")]
-    public async Task<ActionResult<ApiResponse<WorkspaceDetailsDto>>> GetWorkspaceDetails(Guid workspaceId)
+    public async Task<ActionResult<ApiResponse<WorkspaceDetailsDto>>> GetWorkspaceDetails(Guid workspaceId, CancellationToken cancellationToken)
     {
         var userId = _currentUserService.UserId;
-        var workspace = await _workspaceService.GetWorkspaceDetailsAsync(workspaceId, userId);
+        var workspace = await _workspaceService.GetWorkspaceDetailsAsync(workspaceId, userId, cancellationToken);
         return Ok(ApiResponse<WorkspaceDetailsDto>.SuccessResponse(workspace, "Workspace details retrieved successfully"));
     }
 

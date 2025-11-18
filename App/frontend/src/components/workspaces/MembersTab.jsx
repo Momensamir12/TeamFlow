@@ -3,6 +3,7 @@ import { Users, Mail, Shield, MoreVertical, UserMinus, Copy, Check, ChevronDown 
 import { getWorkspaceRoleName, getRoleColor, canManageWorkspace, WORKSPACE_ROLE } from '../../constants/config';
 import { updateMemberRole, removeMember, getWorkspaceCode } from '../../api/workspaceApi';
 import InviteByEmailModal from './InviteByEmailModal';
+import Dropdown, { DropdownItem } from '../common/Dropdown';
 
 function MembersTab({ workspaceId, members, userRole, onMembersUpdated }) {
   const [showInvite, setShowInvite] = useState(false);
@@ -58,7 +59,7 @@ function MembersTab({ workspaceId, members, userRole, onMembersUpdated }) {
 
   const handleRoleChange = async (memberId, newRole) => {
     setProcessingMember(memberId);
-    setRoleDropdowns(prev => ({ ...prev, [memberId]: false }));
+    setRoleDropdowns({});
     
     try {
       const result = await updateMemberRole(workspaceId, memberId, newRole);
@@ -153,7 +154,7 @@ function MembersTab({ workspaceId, members, userRole, onMembersUpdated }) {
       )}
 
       {/* Members List */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="divide-y divide-gray-200">
           {members.map(member => (
             <div key={member.id} className="p-4 hover:bg-gray-50 transition-colors">
@@ -174,31 +175,30 @@ function MembersTab({ workspaceId, members, userRole, onMembersUpdated }) {
                 <div className="flex items-center gap-3">
                   {canManage && member.userId !== currentUserId ? (
                     <>
-                      <div className="relative">
-                        <button
-                          type="button"
-                          onClick={() => toggleRoleDropdown(member.userId)}
-                          disabled={processingMember === member.userId}
-                          className={`px-3 py-1 rounded border font-medium text-sm ${getRoleColor(member.role)} disabled:opacity-50 flex items-center gap-1`}
-                        >
-                          <span>{getWorkspaceRoleName(member.role)}</span>
-                          <ChevronDown size={14} />
-                        </button>
-                        {roleDropdowns[member.userId] && (
-                          <div className="absolute z-50 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg min-w-[120px]">
-                            {roleOptions.map(option => (
-                              <button
-                                key={option.value}
-                                type="button"
-                                onClick={() => handleRoleChange(member.userId, option.value)}
-                                className="w-full px-4 py-2 text-left hover:bg-indigo-50 first:rounded-t-lg last:rounded-b-lg text-sm"
-                              >
-                                {option.label}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      <Dropdown
+                        isOpen={roleDropdowns[member.userId]}
+                        onClose={() => setRoleDropdowns({})}
+                        trigger={
+                          <button
+                            type="button"
+                            onClick={() => toggleRoleDropdown(member.userId)}
+                            disabled={processingMember === member.userId}
+                            className={`px-3 py-1.5 rounded border font-medium text-sm ${getRoleColor(member.role)} disabled:opacity-50 flex items-center gap-1.5`}
+                          >
+                            <span>{getWorkspaceRoleName(member.role)}</span>
+                            <ChevronDown size={14} />
+                          </button>
+                        }
+                      >
+                        {roleOptions.map(option => (
+                          <DropdownItem
+                            key={option.value}
+                            onClick={() => handleRoleChange(member.userId, option.value)}
+                          >
+                            {option.label}
+                          </DropdownItem>
+                        ))}
+                      </Dropdown>
                       <button
                         onClick={() => handleRemoveMember(member.userId)}
                         disabled={processingMember === member.userId}

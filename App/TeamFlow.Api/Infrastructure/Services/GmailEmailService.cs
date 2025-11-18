@@ -13,13 +13,19 @@ public class GmailEmailService : IEmailService
 {
     private readonly ILogger<GmailEmailService> _logger;
     private readonly EmailSettings _emailSettings;
+    private readonly TemplateRenderer _templateRenderer;
+    private readonly IConfiguration _configuration;
 
     public GmailEmailService(
         IOptions<EmailSettings> emailSettings, 
-        ILogger<GmailEmailService> logger)
+        ILogger<GmailEmailService> logger,
+        TemplateRenderer templateRenderer,
+        IConfiguration configuration)
     {
         _emailSettings = emailSettings.Value;
         _logger = logger;
+        _templateRenderer = templateRenderer;
+        _configuration = configuration;
         
         if (string.IsNullOrWhiteSpace(_emailSettings.SenderEmail))
         {
@@ -89,6 +95,30 @@ public class GmailEmailService : IEmailService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error sending email via Gmail to: {To}", request.ToEmail);
+            return false;
+        }
+    }
+
+    public async Task<bool> SendPasswordResetEmailAsync(string toEmail, string resetToken)
+    {
+        try
+        {
+            var frontendUrl = _configuration["AppSettings:FrontendUrl"];
+            var resetUrl = $"{frontendUrl}/reset-password?token={resetToken}";
+            
+            var replacements = new Dictionary<string, string>
+            {
+                { "ResetUrl", resetUrl },
+                { "Email", toEmail }
+            };
+
+            var htmlBody = _templateRenderer.Render("PasswordReset", replacements);
+
+            return await SendEmailAsync(toEmail, "Password Reset Request", htmlBody, true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error sending password reset email to: {Email}", toEmail);
             return false;
         }
     }

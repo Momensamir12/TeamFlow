@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { LogOut, CheckSquare, Users } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import Layout from '../components/common/Layout';
 import TaskList from '../components/tasks/TaskList';
 import AddTaskForm from '../components/tasks/AddTaskForm';
 import WorkspaceList from '../components/workspaces/WorkspaceList';
 import WorkspacePage from './WorkspacePage';
 import { getUserTasks } from '../api/taskApi';
+import signalRService from '../services/signalRService';
+import UserProfileModal from '../components/auth/UserProfileModal';
+import ChangePasswordModal from '../components/auth/ChangePasswordModal';
 
 function DashboardPage({ onLogout }) {
   const [user, setUser] = useState(null);
@@ -12,16 +16,53 @@ function DashboardPage({ onLogout }) {
   const [loading, setLoading] = useState(true);
   const [showCreateTask, setShowCreateTask] = useState(false);
   const [activeTab, setActiveTab] = useState('tasks');
-  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const selectedWorkspace = location.state?.workspace;
+  const initialTab = location.state?.activeTab || 'tasks';
 
   useEffect(() => {
+    // Set active tab from location state if provided
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+
     const userData = JSON.parse(sessionStorage.getItem('user'));
     setUser(userData);
     
     if (activeTab === 'tasks') {
       loadTasks();
     }
-  }, [activeTab]);
+
+    // Initialize SignalR connection
+    signalRService.start();
+
+    // Listen for task assignment notifications
+    const handleNotification = (taskId) => {
+      // Add notification to bell
+      if (window.addNotification) {
+        window.addNotification({
+          type: 'TaskAssigned',
+          taskId: taskId,
+          message: 'You have been assigned a new task'
+        });
+      }
+
+      // Refresh tasks if on tasks tab
+      if (activeTab === 'tasks') {
+        loadTasks();
+      }
+    };
+
+    signalRService.onNotification(handleNotification);
+
+    // Cleanup
+    return () => {
+      signalRService.offNotification(handleNotification);
+    };
+  }, [activeTab, location.state?.activeTab]);
 
   const loadTasks = async () => {
     setLoading(true);
@@ -44,11 +85,11 @@ function DashboardPage({ onLogout }) {
   };
 
   const handleWorkspaceSelect = (workspace) => {
-    setSelectedWorkspace(workspace);
+    navigate('/dashboard', { state: { workspace } });
   };
 
   const handleBackToWorkspaces = () => {
-    setSelectedWorkspace(null);
+    navigate('/dashboard');
   };
 
   // If a workspace is selected, show WorkspacePage
@@ -57,103 +98,76 @@ function DashboardPage({ onLogout }) {
       <WorkspacePage 
         workspace={selectedWorkspace}
         onBack={handleBackToWorkspaces}
+        user={user}
+        onLogout={handleLogout}
+        onOpenProfile={() => setShowProfileModal(true)}
+        onOpenPassword={() => setShowPasswordModal(true)}
       />
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">TeamFlow</h1>
-              <p className="text-sm text-gray-600">Welcome back, {user?.firstName}!</p>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            >
-              <LogOut size={20} />
-              Logout
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Navigation Tabs */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex gap-4">
-            <button
-              onClick={() => setActiveTab('tasks')}
-              className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium transition-colors ${
-                activeTab === 'tasks'
-                  ? 'border-indigo-600 text-indigo-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <CheckSquare size={20} />
-              My Tasks
-            </button>
-            <button
-              onClick={() => setActiveTab('workspaces')}
-              className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium transition-colors ${
-                activeTab === 'workspaces'
-                  ? 'border-indigo-600 text-indigo-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <Users size={20} />
-              Workspaces
-            </button>
-          </div>
-        </div>
-      </div>
-
+    <Layout
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      onLogout={handleLogout}
+      user={user}
+      onOpenProfile={() => setShowProfileModal(true)}
+      onOpenPassword={() => setShowPasswordModal(true)}
+    >
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        {activeTab === 'tasks' ? (
-          <>
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">My Tasks</h2>
-                <p className="text-gray-600 mt-1">
-                  {tasks.length} task{tasks.length !== 1 ? 's' : ''} total
-                </p>
-              </div>
-              <button
-                onClick={() => setShowCreateTask(true)}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-              >
-                + New Task
-              </button>
+      {activeTab === 'tasks' ? (
+        <>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900">My Tasks</h2>
+              <p className="text-gray-600 mt-1">
+                {tasks.length} task{tasks.length !== 1 ? 's' : ''} total
+              </p>
             </div>
+            <button
+              onClick={() => setShowCreateTask(true)}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              + New Task
+            </button>
+          </div>
 
-            {loading ? (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-              </div>
-            ) : (
-              <TaskList 
-                tasks={tasks} 
-                onTaskUpdated={loadTasks}
-              />
-            )}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+            </div>
+          ) : (
+            <TaskList 
+              tasks={tasks} 
+              onTaskUpdated={loadTasks}
+            />
+          )}
 
-            {showCreateTask && (
-              <AddTaskForm
-                onClose={() => setShowCreateTask(false)}
-                onTaskAdded={loadTasks}
-              />
-            )}
-          </>
-        ) : (
+          {showCreateTask && (
+            <AddTaskForm
+              onClose={() => setShowCreateTask(false)}
+              onTaskCreated={loadTasks}
+            />
+          )}
+        </>
+      ) : (
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Workspaces</h2>
           <WorkspaceList onWorkspaceSelect={handleWorkspaceSelect} />
-        )}
-      </main>
-    </div>
+        </div>
+      )}
+
+      {/* Modals */}
+      <UserProfileModal 
+        isOpen={showProfileModal} 
+        onClose={() => setShowProfileModal(false)} 
+      />
+      <ChangePasswordModal 
+        isOpen={showPasswordModal} 
+        onClose={() => setShowPasswordModal(false)} 
+      />
+    </Layout>
   );
 }
 

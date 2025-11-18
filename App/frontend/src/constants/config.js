@@ -1,4 +1,5 @@
 export const API_BASE_URL = 'http://localhost:5000/api';
+export const SIGNAlR_URL = 'http://localhost:5000/notificationsHub'
 
 // If backend uses integers (0, 1, 2, 3):
 export const TASK_STATUS = {

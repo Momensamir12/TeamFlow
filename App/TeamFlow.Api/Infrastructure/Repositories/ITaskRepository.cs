@@ -1,14 +1,8 @@
 using App.Domain.Model;
 
 namespace App.Infrastructure.Repositories;
-public interface ITaskRepository
+public interface ITaskRepository : IRepository<UserTask>
 {
-    Task<UserTask> GetByIdAsync(Guid id);
-    Task<List<UserTask>> GetAssigneeTasksAsync(Guid assigneeId);
-    Task AddAsync(UserTask task);
-    Task Update(UserTask task);
-    Task DeleteAsync(UserTask task);
-    Task SaveChangesAsync();
-    Task<List<UserTask>> GetProjectTasksAsync(Guid ProjectId);
-    
-};
+    Task<List<UserTask>> GetAssigneeTasksAsync(Guid assigneeId, CancellationToken cancellationToken = default);
+    Task<List<UserTask>> GetProjectTasksAsync(Guid projectId, CancellationToken cancellationToken = default);
+}

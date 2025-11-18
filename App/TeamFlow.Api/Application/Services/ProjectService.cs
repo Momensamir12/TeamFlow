@@ -3,6 +3,7 @@ using App.Application.Interfaces;
 using App.Domain.Model;
 using App.Infrastructure.Authorization;
 using App.Infrastructure.Repositories;
+using AutoMapper;
 
 namespace App.Application.Services;
 
@@ -15,6 +16,7 @@ public class ProjectService
     private readonly IProjectAuthorizer _projectAuthorizer;
     private readonly ITaskRepository _taskRepository;
     private readonly UserValidator _userValidator;
+    private readonly IMapper _mapper;
 
     public ProjectService(
         IProjectRepository projectRepository,
@@ -23,7 +25,8 @@ public class ProjectService
         ITaskRepository taskRepository,
         IWorkspaceAuthorizer workspaceAuthorizer,
         IProjectAuthorizer projectAuthorizer,
-        UserValidator userValidator)
+        UserValidator userValidator,
+        IMapper mapper)
     {
         _projectRepository = projectRepository;
         _workspaceRepository = workspaceRepository;
@@ -32,6 +35,7 @@ public class ProjectService
         _workspaceAuthorizer = workspaceAuthorizer;
         _projectAuthorizer = projectAuthorizer;
         _userValidator = userValidator;
+        _mapper = mapper;
     }
 
     public async Task CreateProjectAsync(CreateProjectDto dto, Guid userId)
@@ -127,15 +131,7 @@ public class ProjectService
         {
             if (await _projectAuthorizer.HasAccessAsync(project))
             {
-                userProjects.Add(new ProjectDto
-                {
-                    Id = project.Id,
-                    Name = project.Name,
-                    Description = project.Description,
-                    WorkspaceId = project.WorkspaceId,
-                    IsArchived = project.IsArchived,
-                    CreatedAt = project.CreatedAt
-                });
+                userProjects.Add(_mapper.Map<ProjectDto>(project));
             }
         }
 
@@ -156,31 +152,17 @@ public class ProjectService
         foreach (var member in members)
         {
             var user = await _userRepository.GetByIdAsync(member.UserId);
-            memberDtos.Add(new ProjectMemberDto
-            {
-                Id = member.Id,
-                UserId = member.UserId,
-                UserName = user?.FirstName ?? string.Empty,
-                UserEmail = user?.Email ?? string.Empty,
-                Role = (int)member.Role,  // Cast enum to int
-                AddedAt = member.AddedAt
-            });
+            var memberDto = _mapper.Map<ProjectMemberDto>(member);
+            memberDto.UserName = user?.FirstName ?? string.Empty;
+            memberDto.UserEmail = user?.Email ?? string.Empty;
+            memberDtos.Add(memberDto);
         }
         
-        return new ProjectDetailsDto
-        {
-            Id = project.Id,
-            Name = project.Name,
-            Description = project.Description,
-            WorkspaceId = project.WorkspaceId,
-            WorkspaceName = workspace?.Name ?? string.Empty,
-            CreatedByUserId = project.CreatedByUserId,
-            CreatedByUserName = string.Empty, // TODO: Fetch creator name if needed
-            IsArchived = project.IsArchived,
-            CreatedAt = project.CreatedAt,
-            UpdatedAt = project.UpdatedAt,
-            Members = memberDtos
-        };
+        var detailsDto = _mapper.Map<ProjectDetailsDto>(project);
+        detailsDto.WorkspaceName = workspace?.Name ?? string.Empty;
+        detailsDto.Members = memberDtos;
+        
+        return detailsDto;
     }
 
     public async Task<List<ProjectListDto>> GetWorkspaceProjectsAsync(Guid workspaceId, Guid userId)
@@ -190,14 +172,7 @@ public class ProjectService
         await _workspaceAuthorizer.EnsureHasAccessAsync(workspace);
         
         var projects = await _projectRepository.GetWorkspaceProjectsAsync(workspaceId);
-        return projects.Select(p => new ProjectListDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Description = p.Description,
-            CreatedAt = p.CreatedAt,
-WorkspaceId = p.WorkspaceId
-        }).ToList();
+        return _mapper.Map<List<ProjectListDto>>(projects);
     }
 
     public async Task<int> GetUserRoleInProjectAsync(Guid projectId, Guid userId)
@@ -215,19 +190,6 @@ WorkspaceId = p.WorkspaceId
     public async Task<List<UserTaskDto>> GetProjectTasksAsync (Guid projectId)
     {
         var tasks = await _taskRepository.GetProjectTasksAsync(projectId);
-        var tasksDto = tasks.Select(t => new UserTaskDto 
-        { 
-            Id = t.Id, 
-            Title = t.Title, 
-            Description = t.Description,
-            Status = (int)t.Status,
-            Priority = (int)t.Priority,
-            Deadline = t.Deadline,
-            AssigneeId = t.AssigneeId,
-            OwnerId = t.OwnerId,
-            ProjectId = t.ProjectId
-        }).ToList();
-
-        return tasksDto;
+        return _mapper.Map<List<UserTaskDto>>(tasks);
     }
 }

@@ -13,27 +13,49 @@ namespace App.Infrastructure.Auth.Repositories
             _context = context;
         }
 
-        public async Task<SecurityUser?> GetByUsernameAsync(string username) =>
-           await _context.SecurityUsers.FirstOrDefaultAsync(u => u.Username == username);
+        public async Task<SecurityUser?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default) =>
+           await _context.SecurityUsers.FirstOrDefaultAsync(u => u.Username == username, cancellationToken);
 
-        public Task<SecurityUser?> GetByIdAsync(Guid id) =>
-            _context.SecurityUsers.FindAsync(id).AsTask();
+        // IRepository<SecurityUser> implementation
+        async Task<SecurityUser> IRepository<SecurityUser>.GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        {
+            var user = await _context.SecurityUsers.FindAsync(new object[] { id }, cancellationToken);
+            if (user is null)
+                throw new KeyNotFoundException($"SecurityUser with id '{id}' not found.");
+            return user;
+        }
 
-        public async Task<SecurityUser?> GetByEmailAsync(string email) =>
-            await _context.SecurityUsers.FirstOrDefaultAsync(u => u.Email == email);
+        public async Task<SecurityUser?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
+            await _context.SecurityUsers.FindAsync(new object[] { id }, cancellationToken);
 
-        public async Task<SecurityUser?> GetByEmailVerificationTokenAsync(string token) =>
-            await _context.SecurityUsers.FirstOrDefaultAsync(u => u.EmailVerificationToken == token);
+        public async Task<SecurityUser?> GetByEmailAsync(string email, CancellationToken cancellationToken = default) =>
+            await _context.SecurityUsers.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
 
-        public Task<bool> UsernameExistsAsync(string username) =>
-            _context.SecurityUsers.AnyAsync(u => u.Username == username);
+        public async Task<SecurityUser?> GetByEmailVerificationTokenAsync(string token, CancellationToken cancellationToken = default) =>
+            await _context.SecurityUsers.FirstOrDefaultAsync(u => u.EmailVerificationToken == token, cancellationToken);
 
-        public async Task AddAsync(SecurityUser user) =>
-           await _context.SecurityUsers.AddAsync(user);
+        public Task<bool> UsernameExistsAsync(string username, CancellationToken cancellationToken = default) =>
+            _context.SecurityUsers.AnyAsync(u => u.Username == username, cancellationToken);
 
-        public Task SaveChangesAsync() =>
-            _context.SaveChangesAsync();
-        public Task<SecurityUser> DeleteUserAsync(SecurityUser user)
+        public async Task AddAsync(SecurityUser entity, CancellationToken cancellationToken = default)
+            => await _context.SecurityUsers.AddAsync(entity, cancellationToken);
+
+        public async Task UpdateAsync(SecurityUser entity, CancellationToken cancellationToken = default)
+        {
+            _context.SecurityUsers.Update(entity);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task DeleteAsync(SecurityUser entity, CancellationToken cancellationToken = default)
+        {
+            _context.SecurityUsers.Remove(entity);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        public Task SaveChangesAsync(CancellationToken cancellationToken = default) =>
+            _context.SaveChangesAsync(cancellationToken);
+
+        public Task<SecurityUser> DeleteUserAsync(SecurityUser user, CancellationToken cancellationToken = default)
         {
             _context.SecurityUsers.Remove(user);
             return Task.FromResult(user);

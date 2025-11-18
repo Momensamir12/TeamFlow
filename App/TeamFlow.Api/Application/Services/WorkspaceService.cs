@@ -3,6 +3,7 @@ using App.Application.Dto;
 using App.Domain.Model;
 using App.Infrastructure.Authorization;
 using App.Infrastructure.Repositories;
+using AutoMapper;
 
 namespace App.Application.Services;
 
@@ -14,6 +15,7 @@ public class WorkspaceService
     private readonly UserValidator _userValidator;
     private readonly IWorkspaceAuthorizer _workspaceAuthorizer;
     private readonly ILogger<WorkspaceService> _logger;
+    private readonly IMapper _mapper;
 
     public WorkspaceService(
         IWorkspaceRepository workspaceRepository,
@@ -21,7 +23,8 @@ public class WorkspaceService
         IUserRepository userRepository,
         UserValidator userValidator,
         IWorkspaceAuthorizer workspaceAuthorizer,
-        ILogger<WorkspaceService> logger)
+        ILogger<WorkspaceService> logger,
+        IMapper mapper)
     {
         _workspaceRepository = workspaceRepository;
         _projectRepository = projectRepository;
@@ -29,9 +32,10 @@ public class WorkspaceService
         _userValidator = userValidator;
         _workspaceAuthorizer = workspaceAuthorizer;
         _logger = logger;
+        _mapper = mapper;
     }
 
-    public async Task CreateWorkspaceAsync(CreateWorkspaceDto dto, Guid userId)
+    public async Task CreateWorkspaceAsync(CreateWorkspaceDto dto, Guid userId, CancellationToken cancellationToken = default)
     {
         await _userValidator.ActiveUserAsync(userId);
 
@@ -46,17 +50,17 @@ public class WorkspaceService
         };
 
         workspace.AddMember(userId, WorkspaceRole.Admin);
-        await _workspaceRepository.AddAsync(workspace);
-        await _workspaceRepository.SaveChangesAsync();
+        await _workspaceRepository.AddAsync(workspace, cancellationToken);
+        await _workspaceRepository.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Workspace created: {WorkspaceId} by user: {UserId}", workspace.Id, userId);
     }
 
-    public async Task UpdateWorkspaceAsync(UpdateWorkspaceDto dto, Guid userId)
+    public async Task UpdateWorkspaceAsync(UpdateWorkspaceDto dto, Guid userId, CancellationToken cancellationToken = default)
     {
         await _userValidator.ActiveUserAsync(userId);
 
-        var workspace = await _workspaceRepository.GetByIdAsync(dto.WorkspaceId);
+        var workspace = await _workspaceRepository.GetByIdAsync(dto.WorkspaceId, cancellationToken);
 
         // Only workspace admins can update workspace
         await _workspaceAuthorizer.EnsureIsAdminAsync(workspace);
@@ -64,90 +68,66 @@ public class WorkspaceService
         workspace.Name = dto.Name;
         workspace.Description = dto.Description;
 
-        await _workspaceRepository.UpdateAsync(workspace);
-        await _workspaceRepository.SaveChangesAsync();
+        await _workspaceRepository.UpdateAsync(workspace, cancellationToken);
+        await _workspaceRepository.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Workspace updated: {WorkspaceId} by user: {UserId}", workspace.Id, userId);
     }
 
-    public async Task<List<WorkspaceListDto>> GetUserWorkspacesAsync(Guid userId)
+    public async Task<List<WorkspaceListDto>> GetUserWorkspacesAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         await _userValidator.ActiveUserAsync(userId);
 
-        var workspaces = await _workspaceRepository.GetUserWorkspacesAsync(userId);
+        var workspaces = await _workspaceRepository.GetUserWorkspacesAsync(userId, cancellationToken);
         
         var workspaceListDtos = new List<WorkspaceListDto>();
         
         foreach (var workspace in workspaces)
         {
-            var memberCount = await _workspaceRepository.GetWorkspaceMembersAsync(workspace.Id);
-            var projectCount = await _projectRepository.GetWorkspaceProjectCountAsync(workspace.Id);
+            var memberCount = await _workspaceRepository.GetWorkspaceMembersAsync(workspace.Id, cancellationToken);
+            var projectCount = await _projectRepository.GetWorkspaceProjectCountAsync(workspace.Id, cancellationToken);
             
-            workspaceListDtos.Add(new WorkspaceListDto
-            {
-                Id = workspace.Id,
-                Name = workspace.Name,
-                Description = workspace.Description,
-                OwnerId = workspace.OwnerId,
-                MemberCount = memberCount.Count,
-                ProjectCount = projectCount,
-                CreatedAt = workspace.CreatedAt,
-                IsArchived = workspace.IsArchived
-            });
+            var dto = _mapper.Map<WorkspaceListDto>(workspace);
+            dto.MemberCount = memberCount.Count;
+            dto.ProjectCount = projectCount;
+            
+            workspaceListDtos.Add(dto);
         }
 
         return workspaceListDtos;
     }
 
-    public async Task<WorkspaceDetailsDto> GetWorkspaceDetailsAsync(Guid workspaceId, Guid userId)
+    public async Task<WorkspaceDetailsDto> GetWorkspaceDetailsAsync(Guid workspaceId, Guid userId, CancellationToken cancellationToken = default)
     {
         await _userValidator.ActiveUserAsync(userId);
 
-        var workspace = await _workspaceRepository.GetByIdAsync(workspaceId);
+        var workspace = await _workspaceRepository.GetByIdAsync(workspaceId, cancellationToken);
 
         // Ensure user has access to this workspace
         await _workspaceAuthorizer.EnsureHasAccessAsync(workspace);
 
-        var members = await _workspaceRepository.GetWorkspaceMembersAsync(workspaceId);
-        var projects = await _projectRepository.GetWorkspaceProjectsAsync(workspaceId);
-        var owner = await _userRepository.GetByIdAsync(workspace.OwnerId);
+        var members = await _workspaceRepository.GetWorkspaceMembersAsync(workspaceId, cancellationToken);
+        var projects = await _projectRepository.GetWorkspaceProjectsAsync(workspaceId, cancellationToken);
+        var owner = await _userRepository.GetByIdAsync(workspace.OwnerId, cancellationToken);
 
         var memberDtos = new List<WorkspaceMemberDto>();
         foreach (var member in members)
         {
-            var user = await _userRepository.GetByIdAsync(member.UserId);
-            memberDtos.Add(new WorkspaceMemberDto
-            {
-                Id = member.Id,
-                UserId = member.UserId,
-                UserName = user?.FirstName ?? string.Empty,
-                UserEmail = user?.Email ?? string.Empty,
-                Role = (int)member.Role,  // Cast enum to int
-                JoinedAt = member.JoinedAt
-            });
+            var user = await _userRepository.GetByIdAsync(member.UserId, cancellationToken);
+            var memberDto = _mapper.Map<WorkspaceMemberDto>(member);
+            memberDto.UserName = user?.FirstName ?? string.Empty;
+            memberDto.UserEmail = user?.Email ?? string.Empty;
+            memberDtos.Add(memberDto);
         }
 
-        var projectDtos = projects.Select(p => new ProjectSummaryDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Description = p.Description,
-            CreatedAt = p.CreatedAt
-        }).ToList();
+        var projectDtos = _mapper.Map<List<ProjectSummaryDto>>(projects);
 
-        return new WorkspaceDetailsDto
-        {
-            Id = workspace.Id,
-            Name = workspace.Name,
-            Description = workspace.Description,
-            OwnerId = workspace.OwnerId,
-            OwnerName = owner?.FirstName ?? string.Empty,
-            Code = workspace.Code,
-            IsArchived = workspace.IsArchived,
-            CreatedAt = workspace.CreatedAt,
-            Members = memberDtos,
-            Projects = projectDtos
-        };
+        var detailsDto = _mapper.Map<WorkspaceDetailsDto>(workspace);
+        detailsDto.OwnerName = owner?.FirstName ?? string.Empty;
+        detailsDto.Members = memberDtos;
+        detailsDto.Projects = projectDtos;
+
+        return detailsDto;
     }
 
     public async Task ArchiveWorkspaceAsync(Guid workspaceId, Guid userId)

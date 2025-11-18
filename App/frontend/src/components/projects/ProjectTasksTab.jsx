@@ -68,12 +68,6 @@ function ProjectTasksTab({ projectId, projectMembers, userRole, onTasksUpdated }
   };
 
   const handleTaskClick = (task) => {
-    console.log('Task clicked:', task);
-    console.log('Current User ID:', currentUserId);
-    console.log('Task Owner ID:', task.ownerId);
-    console.log('Task Assignee ID:', task.assigneeId);
-    console.log('Can Edit:', canEdit(task));
-    console.log('Can Delete:', canDelete(task));
     setSelectedTask(task);
   };
 

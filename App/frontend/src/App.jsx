@@ -5,6 +5,8 @@ import DashboardPage from './pages/DashboardPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
 import EmailVerificationRequiredPage from './pages/EmailVerificationRequiredPage';
 import AcceptInvitationPage from './pages/AcceptInvitationPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 function LoginRoute({ isLoggedIn, emailVerified, onLogin }) {
   const [searchParams] = useSearchParams();
@@ -45,6 +47,8 @@ function App() {
         <Routes>
           <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/accept-invitation" element={<AcceptInvitationPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           
           <Route 
             path="/login" 

@@ -45,19 +45,16 @@ function WorkspacesPage() {
 
   // Handle workspace card click
   const handleWorkspaceClick = (workspace) => {
-    console.log('Workspace clicked:', workspace);
     // TODO: Open workspace details modal
   };
 
   // Handle create workspace button
   const handleCreateWorkspace = () => {
-    console.log('Create workspace clicked');
     // TODO: Open create workspace modal
   };
 
   // Handle join workspace button
   const handleJoinWorkspace = () => {
-    console.log('Join workspace clicked');
     // TODO: Open join workspace modal
   };
 

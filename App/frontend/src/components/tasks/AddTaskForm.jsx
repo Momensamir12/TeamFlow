@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { X, AlertCircle, ListTodo, ChevronDown } from 'lucide-react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { addTask, updateTask } from '../../api/taskApi';
-import { TASK_STATUS, TASK_PRIORITY, getStatusName, getPriorityName } from '../../constants/config';
+import { TASK_STATUS, TASK_PRIORITY } from '../../constants/config';
 
 function AddTaskForm({ onTaskCreated, onClose, editingTask, projectId, projectMembers }) {
   const [formData, setFormData] = useState({
@@ -9,7 +11,8 @@ function AddTaskForm({ onTaskCreated, onClose, editingTask, projectId, projectMe
     description: editingTask?.description || '',
     status: editingTask?.status ?? TASK_STATUS.TODO,
     priority: editingTask?.priority ?? TASK_PRIORITY.MEDIUM,
-    deadline: editingTask?.deadline ? new Date(editingTask.deadline).toISOString().split('T')[0] : '',
+    // store deadline as Date | null for DatePicker
+    deadline: editingTask?.deadline ? new Date(editingTask.deadline) : null,
     projectId: projectId || editingTask?.projectId || null,
     assigneeId: editingTask?.assigneeId || ''
   });
@@ -54,14 +57,15 @@ function AddTaskForm({ onTaskCreated, onClose, editingTask, projectId, projectMe
       const result = editingTask 
         ? await updateTask({ ...taskData, id: editingTask.id })
         : await addTask(taskData);
-
+      
       if (result.success) {
         onTaskCreated();
         onClose();
       } else {
         setError(result.message || `Failed to ${editingTask ? 'update' : 'add'} task`);
       }
-    } catch {
+    } catch (error) {
+      console.error('Catch block error:', error);
       setError(`Failed to ${editingTask ? 'update' : 'add'} task. Please try again.`);
     } finally {
       setLoading(false);
@@ -200,12 +204,14 @@ function AddTaskForm({ onTaskCreated, onClose, editingTask, projectId, projectMe
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Deadline
             </label>
-            <input
-              type="date"
-              value={formData.deadline}
-              onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+            <DatePicker
+              selected={formData.deadline}
+              onChange={(date) => setFormData({ ...formData, deadline: date })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              placeholderText="Select a deadline"
               disabled={loading}
+              dateFormat="yyyy-MM-dd"
+              withPortal
             />
           </div>
         </div>

@@ -1,10 +1,9 @@
 // In Application/Users/Interfaces/IUserRepository.cs
 using App.Domain.Model;
 
+
 namespace App.Infrastructure.Repositories;
-public interface IUserRepository
+public interface IUserRepository : IRepository<User>
 {
-    Task<User?> GetByIdAsync(Guid id);
-    Task AddAsync(User user);
-    Task SaveChangesAsync();
+    // Additional user-specific methods can be added here
 }

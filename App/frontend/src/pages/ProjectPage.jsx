@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Folder, Users, ListTodo, Settings } from 'lucide-react';
 import { getProjectDetails, getMyProjectRole } from '../api/projectApi';
 import { getWorkspaceById } from '../api/workspaceApi';
 import { getProjectRoleName, canEditProject } from '../constants/config';
 import ProjectMembersTab from '../components/projects/ProjectMembersTab';
 import ProjectTasksTab from '../components/projects/ProjectTasksTab';
+import Layout from '../components/common/Layout';
 
-function ProjectPage({ project, onBack }) {
+function ProjectPage({ project, onBack, user, onLogout, onOpenProfile, onOpenPassword }) {
+  const navigate = useNavigate();
   const [projectData, setProjectData] = useState(project);
   const [workspaceMembers, setWorkspaceMembers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,9 +33,6 @@ function ProjectPage({ project, onBack }) {
         getProjectDetails(project.id),
         getMyProjectRole(project.id)
       ]);
-
-      console.log('Project API Result:', projectResult);
-      console.log('Role API Result:', roleResult);
       
       // Check if user has access to this project
       if (!projectResult.success && projectResult.message?.includes("don't have access")) {
@@ -55,7 +55,6 @@ function ProjectPage({ project, onBack }) {
 
       if (roleResult.success) {
         const role = roleResult.data;
-        console.log('Setting User Role from API:', role);
         setUserRole(role);
       } else {
         console.warn('Failed to fetch user role:', roleResult.message);
@@ -68,51 +67,92 @@ function ProjectPage({ project, onBack }) {
     }
   };
 
+  const handleSidebarTabChange = (tab) => {
+    if (tab === 'tasks') {
+      // Navigate back to dashboard with tasks tab
+      navigate('/dashboard', { state: { activeTab: 'tasks' } });
+    }
+  };
+
   if (!project) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">No project selected</p>
-          <button
-            onClick={onBack}
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-          >
-            Back to Projects
-          </button>
+      <Layout
+        activeTab="workspaces"
+        onTabChange={handleSidebarTabChange}
+        onLogout={onLogout}
+        user={user}
+        onOpenProfile={onOpenProfile}
+        onOpenPassword={onOpenPassword}
+      >
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <p className="text-gray-600">No project selected</p>
+            <button
+              onClick={onBack}
+              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            >
+              Back to Projects
+            </button>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
+      <Layout
+        activeTab="workspaces"
+        onTabChange={handleSidebarTabChange}
+        onLogout={onLogout}
+        user={user}
+        onOpenProfile={onOpenProfile}
+        onOpenPassword={onOpenPassword}
+      >
+        <div className="flex items-center justify-center min-h-96">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
+      </Layout>
     );
   }
 
   if (!projectData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">Failed to load project</p>
-          <button
-            onClick={onBack}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-          >
-            Back to Projects
-          </button>
+      <Layout
+        activeTab="workspaces"
+        onTabChange={handleSidebarTabChange}
+        onLogout={onLogout}
+        user={user}
+        onOpenProfile={onOpenProfile}
+        onOpenPassword={onOpenPassword}
+      >
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">Failed to load project</p>
+            <button
+              onClick={onBack}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            >
+              Back to Projects
+            </button>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Layout
+      activeTab="workspaces"
+      onTabChange={handleSidebarTabChange}
+      onLogout={onLogout}
+      user={user}
+      onOpenProfile={onOpenProfile}
+      onOpenPassword={onOpenPassword}
+    >
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="bg-white shadow-sm border-b border-gray-200 -mx-6 lg:-mx-8 -mt-6 lg:-mt-8 px-6 lg:px-8 pt-6 lg:pt-8">
+        <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-4 mb-4">
             <button
               onClick={onBack}
@@ -190,7 +230,7 @@ function ProjectPage({ project, onBack }) {
       </div>
 
       {/* Tab Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto py-8">
         {activeTab === 'tasks' ? (
           <ProjectTasksTab
             projectId={projectData.id}
@@ -207,8 +247,8 @@ function ProjectPage({ project, onBack }) {
             onMembersUpdated={loadProjectDetails}
           />
         )}
-      </main>
-    </div>
+      </div>
+    </Layout>
   );
 }
 

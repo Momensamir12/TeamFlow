@@ -31,10 +31,10 @@ public class TaskService
 
         var task = _mapper.Map<UserTask>(taskDTO);
         task.OwnerId = userId;
-        task.AssigneeId = taskDTO.AssigneeId ?? userId;
         task.ProjectId = taskDTO.ProjectId;
         task.CreatedAt = DateTime.UtcNow;
         task.UpdatedAt = DateTime.UtcNow;
+        task.AssignTo(taskDTO.AssigneeId ?? userId);
 
         await _taskRepository.AddAsync(task);
         await _taskRepository.SaveChangesAsync();

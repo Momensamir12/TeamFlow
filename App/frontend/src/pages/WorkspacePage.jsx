@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Folder, Users, Settings, Archive } from 'lucide-react';
 import { getWorkspaceById, getMyWorkspaceRole } from '../api/workspaceApi';
 import { getWorkspaceProjects } from '../api/projectApi';
@@ -6,8 +7,10 @@ import { getWorkspaceRoleName, canCreateProject, canManageWorkspace } from '../c
 import ProjectsTab from '../components/projects/ProjectsTab';
 import MembersTab from '../components/workspaces/MembersTab';
 import ProjectPage from './ProjectPage';
+import Layout from '../components/common/Layout';
 
-function WorkspacePage({ workspace, onBack }) {
+function WorkspacePage({ workspace, onBack, user, onLogout, onOpenProfile, onOpenPassword }) {
+  const navigate = useNavigate();
   const [workspaceData, setWorkspaceData] = useState(workspace);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('projects');
@@ -31,9 +34,6 @@ function WorkspacePage({ workspace, onBack }) {
         getWorkspaceById(workspace.id),
         getMyWorkspaceRole(workspace.id)
       ]);
-
-      console.log('Workspace API Result:', workspaceResult);
-      console.log('Role API Result:', roleResult);
       
       if (workspaceResult.success) {
         setWorkspaceData(workspaceResult.data);
@@ -41,7 +41,6 @@ function WorkspacePage({ workspace, onBack }) {
 
       if (roleResult.success) {
         const role = roleResult.data;
-        console.log('Setting User Role from API:', role);
         setUserRole(role);
       } else {
         console.warn('Failed to fetch user role:', roleResult.message);
@@ -51,6 +50,13 @@ function WorkspacePage({ workspace, onBack }) {
       console.error('Error loading workspace:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSidebarTabChange = (tab) => {
+    if (tab === 'tasks') {
+      // Navigate back to dashboard with tasks tab
+      navigate('/dashboard', { state: { activeTab: 'tasks' } });
     }
   };
 
@@ -69,55 +75,93 @@ function WorkspacePage({ workspace, onBack }) {
       <ProjectPage 
         project={selectedProject}
         onBack={handleBackToWorkspace}
+        user={user}
+        onLogout={onLogout}
+        onOpenProfile={onOpenProfile}
+        onOpenPassword={onOpenPassword}
       />
     );
   }
 
   if (!workspace) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">No workspace selected</p>
-          <button
-            onClick={onBack}
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-          >
-            Back to Workspaces
-          </button>
+      <Layout
+        activeTab="workspaces"
+        onTabChange={handleSidebarTabChange}
+        onLogout={onLogout}
+        user={user}
+        onOpenProfile={onOpenProfile}
+        onOpenPassword={onOpenPassword}
+      >
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <p className="text-gray-600">No workspace selected</p>
+            <button
+              onClick={onBack}
+              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            >
+              Back to Workspaces
+            </button>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
+      <Layout
+        activeTab="workspaces"
+        onTabChange={handleSidebarTabChange}
+        onLogout={onLogout}
+        user={user}
+        onOpenProfile={onOpenProfile}
+        onOpenPassword={onOpenPassword}
+      >
+        <div className="flex items-center justify-center min-h-96">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
+      </Layout>
     );
   }
 
   if (!workspaceData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">Failed to load workspace</p>
-          <button
-            onClick={onBack}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-          >
-            Back to Workspaces
-          </button>
+      <Layout
+        activeTab="workspaces"
+        onTabChange={handleSidebarTabChange}
+        onLogout={onLogout}
+        user={user}
+        onOpenProfile={onOpenProfile}
+        onOpenPassword={onOpenPassword}
+      >
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">Failed to load workspace</p>
+            <button
+              onClick={onBack}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            >
+              Back to Workspaces
+            </button>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Layout
+      activeTab="workspaces"
+      onTabChange={handleSidebarTabChange}
+      onLogout={onLogout}
+      user={user}
+      onOpenProfile={onOpenProfile}
+      onOpenPassword={onOpenPassword}
+    >
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="bg-white shadow-sm border-b border-gray-200 -mx-6 lg:-mx-8 -mt-6 lg:-mt-8 px-6 lg:px-8 pt-6 lg:pt-8">
+        <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-4 mb-4">
             <button
               onClick={onBack}
@@ -198,7 +242,7 @@ function WorkspacePage({ workspace, onBack }) {
       </div>
 
       {/* Tab Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto py-8">
         {activeTab === 'projects' ? (
           <ProjectsTab 
             workspaceId={workspaceData.id}
@@ -214,8 +258,8 @@ function WorkspacePage({ workspace, onBack }) {
             onMembersUpdated={loadWorkspaceDetails}
           />
         )}
-      </main>
-    </div>
+      </div>
+    </Layout>
   );
 }
 

@@ -2,16 +2,13 @@ using App.Infrastructure.Auth.Entities;
 
 namespace App.Infrastructure.Repositories;
 
-    public interface ISecurityUserRepository
-{
-    Task<SecurityUser?> GetByUsernameAsync(string username);
-    Task<SecurityUser?> GetByIdAsync(Guid id);
-    Task<SecurityUser?> GetByEmailAsync(string email);
-    Task<SecurityUser?> GetByEmailVerificationTokenAsync(string token);
-    Task<bool> UsernameExistsAsync(string username);
-    Task AddAsync(SecurityUser user);
-    public Task<SecurityUser> DeleteUserAsync(SecurityUser user);
 
-    Task SaveChangesAsync();
+public interface ISecurityUserRepository : IRepository<SecurityUser>
+{
+    Task<SecurityUser?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default);
+    Task<SecurityUser?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
+    Task<SecurityUser?> GetByEmailVerificationTokenAsync(string token, CancellationToken cancellationToken = default);
+    Task<bool> UsernameExistsAsync(string username, CancellationToken cancellationToken = default);
+    Task<SecurityUser> DeleteUserAsync(SecurityUser user, CancellationToken cancellationToken = default);
 }
 
