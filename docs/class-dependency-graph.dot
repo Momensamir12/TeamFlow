@@ -1,0 +1,77 @@
+digraph CSharpDependencies {
+  graph [rankdir=LR, fontname="Helvetica", fontsize=14, splines=sprite, overlap=false, nodesep=0.2, ranksep=0.8];
+  node [shape=box, style=filled, fillcolor=lightblue, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=9];
+  // Cycle highlighting
+  edge [color="#FF0000", penwidth=2.0];
+
+
+  subgraph "cluster_app" {
+    label="app (net9.0)";
+    style="filled";
+    color="lightgray";
+
+    "app.LoginRequestDTO" [label="LoginRequestDTO", fillcolor=white, tooltip="App.Application.Authentication.DTOS.LoginRequestDTO"];
+    "app.RefreshTokenRequestDTO" [label="RefreshTokenRequestDTO", fillcolor=white, tooltip="App.Application.Authentication.DTOS.RefreshTokenRequestDTO"];
+    "app.RegisterRequestDTO" [label="RegisterRequestDTO", fillcolor=white, tooltip="App.Application.Authentication.DTOS.RegisterRequestDTO"];
+    "app.SecurityUserDTO" [label="SecurityUserDTO", fillcolor=white, tooltip="App.Application.Authentication.DTOS.SecurityUserDTO"];
+    "app.TokenResponseDTO" [label="TokenResponseDTO", fillcolor=white, tooltip="App.Application.Authentication.DTOS.TokenResponseDTO"];
+    "app.AppDbContext" [label="AppDbContext", fillcolor=white, tooltip="App.Application.Data.AppDbContext"];
+    "app.RegisterationService" [label="RegisterationService", fillcolor=white, tooltip="App.Application.Users.Service.RegisterationService"];
+    "app.LoginRequestDtoValidator" [label="LoginRequestDtoValidator", fillcolor=white, tooltip="App.Application.Authentication.Validations.LoginRequestDtoValidator"];
+    "app.RegisterRequestDtoValidator" [label="RegisterRequestDtoValidator", fillcolor=white, tooltip="App.Application.Authentication.Validations.RegisterRequestDtoValidator"];
+    "app.Result" [label="Result", fillcolor=white, tooltip="App.Common.Result"];
+    "app.Result" [label="Result", fillcolor=white, tooltip="App.Common.Result"];
+    "app.User" [label="User", fillcolor=white, tooltip="App.Domain.Model.User"];
+    "app.UserTask" [label="UserTask", fillcolor=white, tooltip="App.Domain.Model.UserTask"];
+    "app.SecurityUser" [label="SecurityUser", fillcolor=white, tooltip="App.Infrastructure.Auth.Entities.SecurityUser"];
+    "app.AuthenticationService" [label="AuthenticationService", fillcolor=white, tooltip="App.Infrastructure.Authentication.Service.AuthenticationService"];
+    "app.SecurityDbContext" [label="SecurityDbContext", fillcolor=white, tooltip="App.Infrastructure.Data.SecurityDbContext"];
+    "app.EFSecurityUserRepository" [label="EFSecurityUserRepository", fillcolor=white, tooltip="App.Infrastructure.Auth.Repositories.EFSecurityUserRepository"];
+    "app.EFUserRepository" [label="EFUserRepository", fillcolor=white, tooltip="App.Infrastructure.Auth.Repositories.EFUserRepository"];
+    "app.JwtSettings" [label="JwtSettings", fillcolor=white, tooltip="App.Infrastructure.Settings.JwtSettings"];
+    "app.Authentication" [label="Authentication", fillcolor=white, tooltip="app.Migrations.Authentication"];
+    "app.Authentication" [label="Authentication", fillcolor=white, tooltip="app.Migrations.Authentication"];
+    "app.userroles" [label="userroles", fillcolor=white, tooltip="app.Migrations.userroles"];
+    "app.userroles" [label="userroles", fillcolor=white, tooltip="app.Migrations.userroles"];
+    "app.roles" [label="roles", fillcolor=white, tooltip="app.Migrations.roles"];
+    "app.roles" [label="roles", fillcolor=white, tooltip="app.Migrations.roles"];
+    "app.RefreshTokens" [label="RefreshTokens", fillcolor=white, tooltip="app.Migrations.RefreshTokens"];
+    "app.RefreshTokens" [label="RefreshTokens", fillcolor=white, tooltip="app.Migrations.RefreshTokens"];
+    "app.UserEmail" [label="UserEmail", fillcolor=white, tooltip="app.Migrations.UserEmail"];
+    "app.UserEmail" [label="UserEmail", fillcolor=white, tooltip="app.Migrations.UserEmail"];
+    "app.SecurityFields" [label="SecurityFields", fillcolor=white, tooltip="app.Migrations.SecurityFields"];
+    "app.SecurityFields" [label="SecurityFields", fillcolor=white, tooltip="app.Migrations.SecurityFields"];
+    "app.SecurityUsersRename" [label="SecurityUsersRename", fillcolor=white, tooltip="app.Migrations.SecurityUsersRename"];
+    "app.SecurityUsersRename" [label="SecurityUsersRename", fillcolor=white, tooltip="app.Migrations.SecurityUsersRename"];
+    "app.removeDomainUserId" [label="removeDomainUserId", fillcolor=white, tooltip="app.Migrations.removeDomainUserId"];
+    "app.removeDomainUserId" [label="removeDomainUserId", fillcolor=white, tooltip="app.Migrations.removeDomainUserId"];
+    "app.DomainUser" [label="DomainUser", fillcolor=white, tooltip="app.Migrations.AppDb.DomainUser"];
+    "app.DomainUser" [label="DomainUser", fillcolor=white, tooltip="app.Migrations.AppDb.DomainUser"];
+    "app.AppDbContextModelSnapshot" [label="AppDbContextModelSnapshot", fillcolor=white, tooltip="app.Migrations.AppDb.AppDbContextModelSnapshot"];
+    "app.SecurityDbContextModelSnapshot" [label="SecurityDbContextModelSnapshot", fillcolor=white, tooltip="app.Migrations.SecurityDbContextModelSnapshot"];
+    "app.AuthController" [label="AuthController", fillcolor=white, tooltip="App.API.Controllers.AuthController"];
+    "app.UserController" [label="UserController", fillcolor=white, tooltip="App.API.Controllers.UserController"];
+  }
+
+  "app.RegisterationService" -> "app.User" [penwidth=1.5];
+  "app.RegisterationService" -> "app.Result" [penwidth=1.5];
+  "app.RegisterationService" -> "app.AuthenticationService" [penwidth=1.5];
+  "app.RegisterationService" -> "app.RegisterRequestDTO" [penwidth=1.5];
+  "app.Result" -> "app.Result" [penwidth=1.5, color="#FF0000", penwidth=2.0, fontcolor="#FF0000", label="cycle"];
+  "app.AuthenticationService" -> "app.SecurityUser" [penwidth=1.5];
+  "app.AuthenticationService" -> "app.TokenResponseDTO" [penwidth=1.5];
+  "app.AuthenticationService" -> "app.Result" [penwidth=1.5];
+  "app.AuthenticationService" -> "app.RegisterRequestDTO" [penwidth=1.5];
+  "app.AuthenticationService" -> "app.LoginRequestDTO" [penwidth=1.5];
+  "app.AuthenticationService" -> "app.RefreshTokenRequestDTO" [penwidth=1.5];
+  "app.EFSecurityUserRepository" -> "app.SecurityDbContext" [penwidth=1.5];
+  "app.EFSecurityUserRepository" -> "app.SecurityUser" [penwidth=1.5];
+  "app.EFUserRepository" -> "app.AppDbContext" [penwidth=1.5];
+  "app.EFUserRepository" -> "app.User" [penwidth=1.5];
+  "app.AuthController" -> "app.AuthenticationService" [penwidth=1.5];
+  "app.AuthController" -> "app.LoginRequestDTO" [penwidth=1.5];
+  "app.AuthController" -> "app.RefreshTokenRequestDTO" [penwidth=1.5];
+  "app.UserController" -> "app.RegisterationService" [penwidth=1.5];
+  "app.UserController" -> "app.RegisterRequestDTO" [penwidth=1.5];
+}

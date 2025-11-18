@@ -1,0 +1,390 @@
+<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0.00 0.00 782.33 901.00">
+<g id="graph0" class="graph" transform="translate(-59.24916114336526,1033.7013085598028) scale(1.1809926614295285)">
+<title>CSharpDependencies</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-897 778.33,-897 778.33,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_app</title>
+<polygon fill="lightgray" stroke="lightgray" points="8,-8 8,-885 766.33,-885 766.33,-8 8,-8"/>
+<text text-anchor="middle" x="387.17" y="-868.4" font-family="Helvetica,sans-Serif" font-size="14.00">app (net9.0)</text>
+</g>
+<!-- app.LoginRequestDTO -->
+<g id="node1" class="node">
+<title>app.LoginRequestDTO</title>
+<g id="a_node1"><a xlink:title="App.Application.Authentication.DTOS.LoginRequestDTO">
+<polygon fill="white" stroke="black" points="737.25,-540 630.14,-540 630.14,-504 737.25,-504 737.25,-540"/>
+<text text-anchor="middle" x="683.69" y="-518.7" font-family="Helvetica,sans-Serif" font-size="11.00">LoginRequestDTO</text>
+</a>
+</g>
+</g>
+<!-- app.RefreshTokenRequestDTO -->
+<g id="node2" class="node">
+<title>app.RefreshTokenRequestDTO</title>
+<g id="a_node2"><a xlink:title="App.Application.Authentication.DTOS.RefreshTokenRequestDTO">
+<polygon fill="white" stroke="black" points="758.33,-590 609.05,-590 609.05,-554 758.33,-554 758.33,-590"/>
+<text text-anchor="middle" x="683.69" y="-568.7" font-family="Helvetica,sans-Serif" font-size="11.00">RefreshTokenRequestDTO</text>
+</a>
+</g>
+</g>
+<!-- app.RegisterRequestDTO -->
+<g id="node3" class="node">
+<title>app.RegisterRequestDTO</title>
+<g id="a_node3"><a xlink:title="App.Application.Authentication.DTOS.RegisterRequestDTO">
+<polygon fill="white" stroke="black" points="744.27,-769 623.12,-769 623.12,-733 744.27,-733 744.27,-769"/>
+<text text-anchor="middle" x="683.69" y="-747.7" font-family="Helvetica,sans-Serif" font-size="11.00">RegisterRequestDTO</text>
+</a>
+</g>
+</g>
+<!-- app.SecurityUserDTO -->
+<g id="node4" class="node">
+<title>app.SecurityUserDTO</title>
+<g id="a_node4"><a xlink:title="App.Application.Authentication.DTOS.SecurityUserDTO">
+<polygon fill="white" stroke="black" points="159.16,-52 56.98,-52 56.98,-16 159.16,-16 159.16,-52"/>
+<text text-anchor="middle" x="108.07" y="-30.7" font-family="Helvetica,sans-Serif" font-size="11.00">SecurityUserDTO</text>
+</a>
+</g>
+</g>
+<!-- app.TokenResponseDTO -->
+<g id="node5" class="node">
+<title>app.TokenResponseDTO</title>
+<g id="a_node5"><a xlink:title="App.Application.Authentication.DTOS.TokenResponseDTO">
+<polygon fill="white" stroke="black" points="743.36,-640 624.03,-640 624.03,-604 743.36,-604 743.36,-640"/>
+<text text-anchor="middle" x="683.69" y="-618.7" font-family="Helvetica,sans-Serif" font-size="11.00">TokenResponseDTO</text>
+</a>
+</g>
+</g>
+<!-- app.AppDbContext -->
+<g id="node6" class="node">
+<title>app.AppDbContext</title>
+<g id="a_node6"><a xlink:title="App.Application.Data.AppDbContext">
+<polygon fill="white" stroke="black" points="521.03,-802 433.49,-802 433.49,-766 521.03,-766 521.03,-802"/>
+<text text-anchor="middle" x="477.26" y="-780.7" font-family="Helvetica,sans-Serif" font-size="11.00">AppDbContext</text>
+</a>
+</g>
+</g>
+<!-- app.UserService -->
+<g id="node7" class="node">
+<title>app.UserService</title>
+<g id="a_node7"><a xlink:title="App.Application.Users.Service.UserService">
+<polygon fill="white" stroke="black" points="340.26,-802 264.35,-802 264.35,-766 340.26,-766 340.26,-802"/>
+<text text-anchor="middle" x="302.3" y="-780.7" font-family="Helvetica,sans-Serif" font-size="11.00">UserService</text>
+</a>
+</g>
+</g>
+<!-- app.UserService&#45;&gt;app.RegisterRequestDTO -->
+<g id="edge4" class="edge">
+<title>app.UserService-&gt;app.RegisterRequestDTO</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M340.41,-772.81C359.38,-767.61 382.95,-761.93 404.46,-759 474.05,-749.51 554.3,-748.22 610.68,-748.87"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="610.37,-752.37 620.42,-749.01 610.47,-745.37 610.37,-752.37"/>
+</g>
+<!-- app.UserService&#45;&gt;app.AppDbContext -->
+<g id="edge3" class="edge">
+<title>app.UserService-&gt;app.AppDbContext</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M340.41,-784C363.88,-784 394.66,-784 420.99,-784"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="420.84,-787.5 430.84,-784 420.84,-780.5 420.84,-787.5"/>
+</g>
+<!-- app.User -->
+<g id="node12" class="node">
+<title>app.User</title>
+<g id="a_node12"><a xlink:title="App.Domain.Model.User">
+<polygon fill="white" stroke="black" points="504.26,-852 450.26,-852 450.26,-816 504.26,-816 504.26,-852"/>
+<text text-anchor="middle" x="477.26" y="-830.7" font-family="Helvetica,sans-Serif" font-size="11.00">User</text>
+</a>
+</g>
+</g>
+<!-- app.UserService&#45;&gt;app.User -->
+<g id="edge1" class="edge">
+<title>app.UserService-&gt;app.User</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M340.41,-794.73C369.24,-803.06 409.09,-814.58 438.17,-822.99"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="437.15,-826.34 447.73,-825.75 439.09,-819.61 437.15,-826.34"/>
+</g>
+<!-- app.AuthenticationService -->
+<g id="node14" class="node">
+<title>app.AuthenticationService</title>
+<g id="a_node14"><a xlink:title="App.Infrastructure.Authentication.Service.AuthenticationService">
+<polygon fill="white" stroke="black" points="538.46,-630 416.06,-630 416.06,-594 538.46,-594 538.46,-630"/>
+<text text-anchor="middle" x="477.26" y="-608.7" font-family="Helvetica,sans-Serif" font-size="11.00">AuthenticationService</text>
+</a>
+</g>
+</g>
+<!-- app.UserService&#45;&gt;app.AuthenticationService -->
+<g id="edge2" class="edge">
+<title>app.UserService-&gt;app.AuthenticationService</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M321.81,-765.59C352.5,-735.07 414.04,-673.88 449.47,-638.64"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="451.65,-641.41 456.27,-631.88 446.71,-636.45 451.65,-641.41"/>
+</g>
+<!-- app.LoginRequestDtoValidator -->
+<g id="node8" class="node">
+<title>app.LoginRequestDtoValidator</title>
+<g id="a_node8"><a xlink:title="App.Application.Authentication.Validations.LoginRequestDtoValidator">
+<polygon fill="white" stroke="black" points="180.28,-102 35.86,-102 35.86,-66 180.28,-66 180.28,-102"/>
+<text text-anchor="middle" x="108.07" y="-80.7" font-family="Helvetica,sans-Serif" font-size="11.00">LoginRequestDtoValidator</text>
+</a>
+</g>
+</g>
+<!-- app.RegisterRequestDtoValidator -->
+<g id="node9" class="node">
+<title>app.RegisterRequestDtoValidator</title>
+<g id="a_node9"><a xlink:title="App.Application.Authentication.Validations.RegisterRequestDtoValidator">
+<polygon fill="white" stroke="black" points="187.31,-152 28.84,-152 28.84,-116 187.31,-116 187.31,-152"/>
+<text text-anchor="middle" x="108.07" y="-130.7" font-family="Helvetica,sans-Serif" font-size="11.00">RegisterRequestDtoValidator</text>
+</a>
+</g>
+</g>
+<!-- app.Result -->
+<g id="node10" class="node">
+<title>app.Result</title>
+<g id="a_node10"><a xlink:title="App.Common.Result">
+<polygon fill="white" stroke="black" points="710.69,-690 656.69,-690 656.69,-654 710.69,-654 710.69,-690"/>
+<text text-anchor="middle" x="683.69" y="-668.7" font-family="Helvetica,sans-Serif" font-size="11.00">Result</text>
+</a>
+</g>
+</g>
+<!-- app.Result&#45;&gt;app.Result -->
+<g id="edge5" class="edge">
+<title>app.Result-&gt;app.Result</title>
+<path fill="none" stroke="#ff0000" stroke-width="2" d="M664.29,-690.41C663.19,-697.8 669.66,-704 683.69,-704 689.18,-704 693.5,-703.05 696.68,-701.46"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="2" points="699.58,-703.44 701.58,-693.03 693.53,-699.92 699.58,-703.44"/>
+<text text-anchor="middle" x="683.69" y="-706.7" font-family="Helvetica,sans-Serif" font-size="9.00" fill="#ff0000">cycle</text>
+</g>
+<!-- app.Task -->
+<g id="node11" class="node">
+<title>app.Task</title>
+<g id="a_node11"><a xlink:title="App.Domain.Model.Task">
+<polygon fill="white" stroke="black" points="135.07,-202 81.07,-202 81.07,-166 135.07,-166 135.07,-202"/>
+<text text-anchor="middle" x="108.07" y="-180.7" font-family="Helvetica,sans-Serif" font-size="11.00">Task</text>
+</a>
+</g>
+</g>
+<!-- app.SecurityUser -->
+<g id="node13" class="node">
+<title>app.SecurityUser</title>
+<g id="a_node13"><a xlink:title="App.Infrastructure.Auth.Entities.SecurityUser">
+<polygon fill="white" stroke="black" points="723.17,-490 644.21,-490 644.21,-454 723.17,-454 723.17,-490"/>
+<text text-anchor="middle" x="683.69" y="-468.7" font-family="Helvetica,sans-Serif" font-size="11.00">SecurityUser</text>
+</a>
+</g>
+</g>
+<!-- app.AuthenticationService&#45;&gt;app.LoginRequestDTO -->
+<g id="edge10" class="edge">
+<title>app.AuthenticationService-&gt;app.LoginRequestDTO</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M513.87,-593.63C545.93,-577.22 590.73,-554.62 609.05,-547 612.05,-545.75 615.13,-544.52 618.25,-543.31"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="619.41,-546.62 627.55,-539.84 616.96,-540.06 619.41,-546.62"/>
+</g>
+<!-- app.AuthenticationService&#45;&gt;app.RefreshTokenRequestDTO -->
+<g id="edge11" class="edge">
+<title>app.AuthenticationService-&gt;app.RefreshTokenRequestDTO</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M538.91,-602.43C552.48,-600.14 566.78,-597.59 580.05,-595 585.59,-593.92 591.28,-592.76 597.01,-591.57"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="597.52,-595.04 606.57,-589.54 596.06,-588.19 597.52,-595.04"/>
+</g>
+<!-- app.AuthenticationService&#45;&gt;app.RegisterRequestDTO -->
+<g id="edge9" class="edge">
+<title>app.AuthenticationService-&gt;app.RegisterRequestDTO</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M494.73,-630.27C518.01,-655.09 562.84,-699.41 609.05,-726 610,-726.54 610.96,-727.08 611.94,-727.61"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="610.17,-730.64 620.69,-731.89 613.24,-724.35 610.17,-730.64"/>
+</g>
+<!-- app.AuthenticationService&#45;&gt;app.TokenResponseDTO -->
+<g id="edge7" class="edge">
+<title>app.AuthenticationService-&gt;app.TokenResponseDTO</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M538.77,-614.96C561.63,-616.08 587.84,-617.36 611.59,-618.52"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="611.32,-622.01 621.48,-619.01 611.66,-615.02 611.32,-622.01"/>
+</g>
+<!-- app.AuthenticationService&#45;&gt;app.Result -->
+<g id="edge8" class="edge">
+<title>app.AuthenticationService-&gt;app.Result</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M538.77,-629.76C573.12,-639.84 615.07,-652.15 644.79,-660.88"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="643.57,-664.16 654.15,-663.62 645.54,-657.45 643.57,-664.16"/>
+</g>
+<!-- app.AuthenticationService&#45;&gt;app.SecurityUser -->
+<g id="edge6" class="edge">
+<title>app.AuthenticationService-&gt;app.SecurityUser</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M494.7,-593.56C517.93,-568.51 562.72,-523.79 609.05,-497 616.36,-492.77 624.49,-489.12 632.61,-486.01"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="633.59,-489.38 641.85,-482.74 631.25,-482.78 633.59,-489.38"/>
+</g>
+<!-- app.SecurityDbContext -->
+<g id="node15" class="node">
+<title>app.SecurityDbContext</title>
+<g id="a_node15"><a xlink:title="App.Infrastructure.Data.SecurityDbContext">
+<polygon fill="white" stroke="black" points="737.55,-440 629.84,-440 629.84,-404 737.55,-404 737.55,-440"/>
+<text text-anchor="middle" x="683.69" y="-418.7" font-family="Helvetica,sans-Serif" font-size="11.00">SecurityDbContext</text>
+</a>
+</g>
+</g>
+<!-- app.EFSecurityUserRepository -->
+<g id="node16" class="node">
+<title>app.EFSecurityUserRepository</title>
+<g id="a_node16"><a xlink:title="App.Infrastructure.Auth.Repositories.EFSecurityUserRepository">
+<polygon fill="white" stroke="black" points="550.05,-460 404.46,-460 404.46,-424 550.05,-424 550.05,-460"/>
+<text text-anchor="middle" x="477.26" y="-438.7" font-family="Helvetica,sans-Serif" font-size="11.00">EFSecurityUserRepository</text>
+</a>
+</g>
+</g>
+<!-- app.EFSecurityUserRepository&#45;&gt;app.SecurityUser -->
+<g id="edge13" class="edge">
+<title>app.EFSecurityUserRepository-&gt;app.SecurityUser</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M550.33,-452.58C577.28,-456.53 607.29,-460.94 631.92,-464.55"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="631.25,-467.99 641.65,-465.98 632.27,-461.06 631.25,-467.99"/>
+</g>
+<!-- app.EFSecurityUserRepository&#45;&gt;app.SecurityDbContext -->
+<g id="edge12" class="edge">
+<title>app.EFSecurityUserRepository-&gt;app.SecurityDbContext</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M550.33,-434.95C572.25,-432.8 596.2,-430.46 617.62,-428.37"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="617.7,-431.87 627.31,-427.42 617.02,-424.91 617.7,-431.87"/>
+</g>
+<!-- app.JwtSettings -->
+<g id="node17" class="node">
+<title>app.JwtSettings</title>
+<g id="a_node17"><a xlink:title="App.Infrastructure.Settings.JwtSettings">
+<polygon fill="white" stroke="black" points="144.2,-252 71.95,-252 71.95,-216 144.2,-216 144.2,-252"/>
+<text text-anchor="middle" x="108.07" y="-230.7" font-family="Helvetica,sans-Serif" font-size="11.00">JwtSettings</text>
+</a>
+</g>
+</g>
+<!-- app.Authentication -->
+<g id="node18" class="node">
+<title>app.Authentication</title>
+<g id="a_node18"><a xlink:title="app.Migrations.Authentication">
+<polygon fill="white" stroke="black" points="150.93,-302 65.22,-302 65.22,-266 150.93,-266 150.93,-302"/>
+<text text-anchor="middle" x="108.07" y="-280.7" font-family="Helvetica,sans-Serif" font-size="11.00">Authentication</text>
+</a>
+</g>
+</g>
+<!-- app.userroles -->
+<g id="node19" class="node">
+<title>app.userroles</title>
+<g id="a_node19"><a xlink:title="app.Migrations.userroles">
+<polygon fill="white" stroke="black" points="138.69,-352 77.45,-352 77.45,-316 138.69,-316 138.69,-352"/>
+<text text-anchor="middle" x="108.07" y="-330.7" font-family="Helvetica,sans-Serif" font-size="11.00">userroles</text>
+</a>
+</g>
+</g>
+<!-- app.roles -->
+<g id="node20" class="node">
+<title>app.roles</title>
+<g id="a_node20"><a xlink:title="app.Migrations.roles">
+<polygon fill="white" stroke="black" points="135.07,-402 81.07,-402 81.07,-366 135.07,-366 135.07,-402"/>
+<text text-anchor="middle" x="108.07" y="-380.7" font-family="Helvetica,sans-Serif" font-size="11.00">roles</text>
+</a>
+</g>
+</g>
+<!-- app.RefreshTokens -->
+<g id="node21" class="node">
+<title>app.RefreshTokens</title>
+<g id="a_node21"><a xlink:title="app.Migrations.RefreshTokens">
+<polygon fill="white" stroke="black" points="153.37,-452 62.78,-452 62.78,-416 153.37,-416 153.37,-452"/>
+<text text-anchor="middle" x="108.07" y="-430.7" font-family="Helvetica,sans-Serif" font-size="11.00">RefreshTokens</text>
+</a>
+</g>
+</g>
+<!-- app.UserEmail -->
+<g id="node22" class="node">
+<title>app.UserEmail</title>
+<g id="a_node22"><a xlink:title="app.Migrations.UserEmail">
+<polygon fill="white" stroke="black" points="141.44,-502 74.71,-502 74.71,-466 141.44,-466 141.44,-502"/>
+<text text-anchor="middle" x="108.07" y="-480.7" font-family="Helvetica,sans-Serif" font-size="11.00">UserEmail</text>
+</a>
+</g>
+</g>
+<!-- app.SecurityFields -->
+<g id="node23" class="node">
+<title>app.SecurityFields</title>
+<g id="a_node23"><a xlink:title="app.Migrations.SecurityFields">
+<polygon fill="white" stroke="black" points="150.61,-552 65.53,-552 65.53,-516 150.61,-516 150.61,-552"/>
+<text text-anchor="middle" x="108.07" y="-530.7" font-family="Helvetica,sans-Serif" font-size="11.00">SecurityFields</text>
+</a>
+</g>
+</g>
+<!-- app.SecurityUsersRename -->
+<g id="node24" class="node">
+<title>app.SecurityUsersRename</title>
+<g id="a_node24"><a xlink:title="app.Migrations.SecurityUsersRename">
+<polygon fill="white" stroke="black" points="171.09,-602 45.05,-602 45.05,-566 171.09,-566 171.09,-602"/>
+<text text-anchor="middle" x="108.07" y="-580.7" font-family="Helvetica,sans-Serif" font-size="11.00">SecurityUsersRename</text>
+</a>
+</g>
+</g>
+<!-- app.removeDomainUserId -->
+<g id="node25" class="node">
+<title>app.removeDomainUserId</title>
+<g id="a_node25"><a xlink:title="app.Migrations.removeDomainUserId">
+<polygon fill="white" stroke="black" points="169.56,-652 46.58,-652 46.58,-616 169.56,-616 169.56,-652"/>
+<text text-anchor="middle" x="108.07" y="-630.7" font-family="Helvetica,sans-Serif" font-size="11.00">removeDomainUserId</text>
+</a>
+</g>
+</g>
+<!-- app.DomainUser -->
+<g id="node26" class="node">
+<title>app.DomainUser</title>
+<g id="a_node26"><a xlink:title="app.Migrations.AppDb.DomainUser">
+<polygon fill="white" stroke="black" points="146.64,-702 69.51,-702 69.51,-666 146.64,-666 146.64,-702"/>
+<text text-anchor="middle" x="108.07" y="-680.7" font-family="Helvetica,sans-Serif" font-size="11.00">DomainUser</text>
+</a>
+</g>
+</g>
+<!-- app.AppDbContextModelSnapshot -->
+<g id="node27" class="node">
+<title>app.AppDbContextModelSnapshot</title>
+<g id="a_node27"><a xlink:title="app.Migrations.AppDb.AppDbContextModelSnapshot">
+<polygon fill="white" stroke="black" points="190.07,-752 26.08,-752 26.08,-716 190.07,-716 190.07,-752"/>
+<text text-anchor="middle" x="108.07" y="-730.7" font-family="Helvetica,sans-Serif" font-size="11.00">AppDbContextModelSnapshot</text>
+</a>
+</g>
+</g>
+<!-- app.SecurityDbContextModelSnapshot -->
+<g id="node28" class="node">
+<title>app.SecurityDbContextModelSnapshot</title>
+<g id="a_node28"><a xlink:title="app.Migrations.SecurityDbContextModelSnapshot">
+<polygon fill="white" stroke="black" points="200.15,-802 16,-802 16,-766 200.15,-766 200.15,-802"/>
+<text text-anchor="middle" x="108.07" y="-780.7" font-family="Helvetica,sans-Serif" font-size="11.00">SecurityDbContextModelSnapshot</text>
+</a>
+</g>
+</g>
+<!-- app.AuthController -->
+<g id="node29" class="node">
+<title>app.AuthController</title>
+<g id="a_node29"><a xlink:title="App.API.Controllers.AuthController">
+<polygon fill="white" stroke="black" points="345.46,-590 259.15,-590 259.15,-554 345.46,-554 345.46,-590"/>
+<text text-anchor="middle" x="302.3" y="-568.7" font-family="Helvetica,sans-Serif" font-size="11.00">AuthController</text>
+</a>
+</g>
+</g>
+<!-- app.AuthController&#45;&gt;app.LoginRequestDTO -->
+<g id="edge15" class="edge">
+<title>app.AuthController-&gt;app.LoginRequestDTO</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M345.72,-566.41C411.89,-557.69 540.13,-540.79 617.92,-530.54"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="618.24,-534.02 627.7,-529.25 617.33,-527.08 618.24,-534.02"/>
+</g>
+<!-- app.AuthController&#45;&gt;app.RefreshTokenRequestDTO -->
+<g id="edge16" class="edge">
+<title>app.AuthController-&gt;app.RefreshTokenRequestDTO</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M345.72,-572C406.11,-572 518.19,-572 596.45,-572"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="596.43,-575.5 606.43,-572 596.43,-568.5 596.43,-575.5"/>
+</g>
+<!-- app.AuthController&#45;&gt;app.AuthenticationService -->
+<g id="edge14" class="edge">
+<title>app.AuthController-&gt;app.AuthenticationService</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M345.61,-581.79C363.17,-585.85 384.05,-590.67 403.9,-595.27"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="403.02,-598.66 413.56,-597.5 404.6,-591.84 403.02,-598.66"/>
+</g>
+<!-- app.UserController -->
+<g id="node30" class="node">
+<title>app.UserController</title>
+<g id="a_node30"><a xlink:title="App.API.Controllers.UserController">
+<polygon fill="white" stroke="black" points="151.53,-852 64.62,-852 64.62,-816 151.53,-816 151.53,-852"/>
+<text text-anchor="middle" x="108.07" y="-830.7" font-family="Helvetica,sans-Serif" font-size="11.00">UserController</text>
+</a>
+</g>
+</g>
+<!-- app.UserController&#45;&gt;app.RegisterRequestDTO -->
+<g id="edge18" class="edge">
+<title>app.UserController-&gt;app.RegisterRequestDTO</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M151.78,-826.33C167.55,-822.47 185.21,-816.88 200.15,-809 230.55,-792.96 227.44,-772.26 259.15,-759 374.66,-710.69 523.85,-723.1 610.84,-736.83"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="610.01,-740.24 620.45,-738.4 611.14,-733.33 610.01,-740.24"/>
+</g>
+<!-- app.UserController&#45;&gt;app.UserService -->
+<g id="edge17" class="edge">
+<title>app.UserController-&gt;app.UserService</title>
+<path fill="none" stroke="#ff0000" stroke-width="1.5" d="M151.74,-822.9C181.42,-815.18 221.08,-804.87 252.1,-796.8"/>
+<polygon fill="#ff0000" stroke="#ff0000" stroke-width="1.5" points="252.96,-800.19 261.76,-794.29 251.2,-793.42 252.96,-800.19"/>
+</g>
+</g>
+</svg>
