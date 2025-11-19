@@ -6,6 +6,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamFlow.Api", "Backend\Tea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamFlow.Api.Tests", "Backend\TeamFlow.Api.Tests\TeamFlow.Api.Tests.csproj", "{8BF110C1-9DB2-4875-90CC-2DAE0C03FECE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backend", "Backend", "{D55F70C8-FF32-4C85-8596-A834FD6290C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamFlow.StressTests", "Backend\TeamFlow.StressTests\TeamFlow.StressTests.csproj", "{B0FFC78E-AC39-4697-88C1-213F503859EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,11 +24,18 @@ Global
 		{8BF110C1-9DB2-4875-90CC-2DAE0C03FECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BF110C1-9DB2-4875-90CC-2DAE0C03FECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8BF110C1-9DB2-4875-90CC-2DAE0C03FECE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0FFC78E-AC39-4697-88C1-213F503859EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0FFC78E-AC39-4697-88C1-213F503859EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0FFC78E-AC39-4697-88C1-213F503859EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0FFC78E-AC39-4697-88C1-213F503859EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1F0E5698-B402-46E0-B8CA-19FBF6FE0348}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B0FFC78E-AC39-4697-88C1-213F503859EF} = {D55F70C8-FF32-4C85-8596-A834FD6290C6}
 	EndGlobalSection
 EndGlobal
