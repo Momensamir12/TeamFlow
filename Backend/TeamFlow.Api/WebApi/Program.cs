@@ -34,14 +34,20 @@ using System.Threading.RateLimiting;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
-var backendUrl = builder.Configuration["AppSettings:BackendUrl"]!;
+
 builder.Services.Configure<AppSettings>(
     builder.Configuration.GetSection("AppSettings"));
-    
-builder.WebHost.ConfigureKestrel(options =>
+
+// Only configure Kestrel port for local development
+// Azure App Service manages ports automatically via environment variable
+var backendUrl = builder.Configuration["AppSettings:BackendUrl"];
+if (!string.IsNullOrEmpty(backendUrl) && !builder.Environment.IsProduction())
 {
-    options.ListenAnyIP(new Uri(backendUrl).Port);
-});
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        options.ListenAnyIP(new Uri(backendUrl).Port);
+    });
+}
 builder.Services.AddRateLimiter(_ => _
     .AddFixedWindowLimiter(policyName: "fixed", options =>
     {
@@ -55,12 +61,36 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        var frontendUrl = builder.Configuration["AppSettings:FrontendUrl"]!;
-        policy.WithOrigins(frontendUrl) 
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials()
-              .WithExposedHeaders("Content-Length", "X-JSON-Response");
+        var frontendUrl = builder.Configuration["AppSettings:FrontendUrl"];
+        
+        // In production, if no frontend URL is configured, allow any origin temporarily
+        // You should configure the actual frontend URL in Azure App Service settings
+        if (!string.IsNullOrEmpty(frontendUrl))
+        {
+            policy.WithOrigins(frontendUrl);
+        }
+        else if (builder.Environment.IsProduction())
+        {
+            // Allow all origins in production if frontend URL is not configured
+            // This is a temporary solution - set FrontendUrl in Azure configuration
+            policy.AllowAnyOrigin();
+        }
+        else
+        {
+            // Fallback for local development
+            policy.WithOrigins("http://localhost:5173");
+        }
+        
+        policy.AllowAnyHeader()
+              .AllowAnyMethod();
+        
+        // AllowCredentials cannot be used with AllowAnyOrigin
+        if (!string.IsNullOrEmpty(frontendUrl))
+        {
+            policy.AllowCredentials();
+        }
+        
+        policy.WithExposedHeaders("Content-Length", "X-JSON-Response");
     });
 });
 
@@ -156,6 +186,13 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
+    var jwtSecretKey = builder.Configuration["JwtSettings:SecretKey"];
+    if (string.IsNullOrEmpty(jwtSecretKey))
+    {
+        throw new InvalidOperationException(
+            "JWT Secret Key is not configured. Please set 'JwtSettings:SecretKey' in your configuration or Azure App Service settings.");
+    }
+    
     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -163,7 +200,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidateAudience = true,
         ValidAudience = builder.Configuration["JwtSettings:Audience"],
         ValidateLifetime = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]!)),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecretKey)),
         ValidateIssuerSigningKey = true
 
     };
