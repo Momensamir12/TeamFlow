@@ -22,11 +22,11 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ApiResponse<Guid>>> CreateProject(CreateProjectDto dto)
+    public async Task<ActionResult<ApiResponse<ProjectListDto>>> CreateProject(CreateProjectDto dto)
     {
         var userId = _currentUserService.UserId;
-        await _projectService.CreateProjectAsync(dto, userId);
-        return Ok(ApiResponse<string>.SuccessResponse("", "Project created successfully"));
+        var project = await _projectService.CreateProjectAsync(dto, userId);
+        return Ok(ApiResponse<ProjectListDto>.SuccessResponse(project, "Project created successfully"));
     }
 
     [HttpPut]

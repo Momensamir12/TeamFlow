@@ -36,25 +36,25 @@ public class GlobalExceptionHandler
     {
         context.Response.ContentType = "application/json";
 
-        var (statusCode, message, type) = exception switch
+        var (statusCode, message) = exception switch
         {
-            TaskNotFoundException ex => (StatusCodes.Status404NotFound, ex.Message, "Not Found"),
-            UnauthorizedAccessException ex => (StatusCodes.Status403Forbidden, ex.Message, "Forbidden"),
-            ArgumentException ex => (StatusCodes.Status400BadRequest, ex.Message, "Bad Request"),
-            InvalidOperationException ex => (StatusCodes.Status400BadRequest, ex.Message, "Bad Request"),
-            KeyNotFoundException ex => (StatusCodes.Status404NotFound, ex.Message, "Not Found"),
+            TaskNotFoundException => (StatusCodes.Status404NotFound, "Task not found."),
+            UnauthorizedAccessException => (StatusCodes.Status403Forbidden, "You do not have permission to perform this action."),
+            ArgumentException => (StatusCodes.Status400BadRequest, "Invalid request parameters."),
+            KeyNotFoundException => (StatusCodes.Status404NotFound, "The requested resource was not found."),
+            InvalidOperationException when !exception.Message.Contains("Unable to resolve service") 
+                => (StatusCodes.Status400BadRequest, "This operation cannot be performed at this time."),
             _ => (StatusCodes.Status500InternalServerError, 
-                  "An error occurred while processing your request.", 
-                  "Internal Server Error")
+                  "An error occurred while processing your request. Please try again later.")
         };
 
-        // Build response
+        _logger.LogError(exception, "Exception: {ExceptionType} - {ExceptionMessage}", exception.GetType().Name, exception.Message);
+
         var response = new
         {
-            statusCode,
-            message,
-            type,
-            details = _env.IsDevelopment() ? exception.StackTrace : null  // Only in dev
+            success = false,
+            message = message,
+            errors = (object?)null
         };
 
         context.Response.StatusCode = statusCode;

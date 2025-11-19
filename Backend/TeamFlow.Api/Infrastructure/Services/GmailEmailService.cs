@@ -77,17 +77,19 @@ public class GmailEmailService : IEmailService
             message.Body = bodyBuilder.ToMessageBody();
 
             using var client = new SmtpClient();
+            client.Timeout = 10000; // 10 second timeout
             
             _logger.LogInformation("Connecting to Gmail SMTP server...");
-            await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.SmtpPort, SecureSocketOptions.StartTls);
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.SmtpPort, SecureSocketOptions.StartTls, cts.Token);
             
             _logger.LogInformation("Authenticating with Gmail...");
-            await client.AuthenticateAsync(_emailSettings.Username, _emailSettings.Password);
+            await client.AuthenticateAsync(_emailSettings.Username, _emailSettings.Password, cts.Token);
             
             _logger.LogInformation("Sending email...");
-            await client.SendAsync(message);
+            await client.SendAsync(message, cts.Token);
             
-            await client.DisconnectAsync(true);
+            await client.DisconnectAsync(true, cts.Token);
 
             _logger.LogInformation("Email sent successfully via Gmail to: {To}", request.ToEmail);
             return true;

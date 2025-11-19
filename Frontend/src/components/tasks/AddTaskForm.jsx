@@ -58,8 +58,11 @@ function AddTaskForm({ onTaskCreated, onClose, editingTask, projectId, projectMe
         ? await updateTask({ ...taskData, id: editingTask.id })
         : await addTask(taskData);
       
+      console.log('[AddTaskForm] Task result:', result);
+      
       if (result.success) {
-        onTaskCreated();
+        console.log('[AddTaskForm] Task created/updated successfully, data:', result.data);
+        onTaskCreated(result.data); // Pass the created/updated task data
         onClose();
       } else {
         setError(result.message || `Failed to ${editingTask ? 'update' : 'add'} task`);

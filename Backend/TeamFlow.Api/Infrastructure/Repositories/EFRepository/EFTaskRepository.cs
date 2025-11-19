@@ -52,7 +52,7 @@ public class EFTaskRepository : ITaskRepository
     public async Task<List<UserTask>> GetAssigneeTasksAsync(Guid assigneeId, CancellationToken cancellationToken = default)
     {
         return await _context.Tasks
-        .Where(t => t.AssigneeId == assigneeId)
+        .Where(t => (t.ProjectId == null && t.OwnerId == assigneeId) || (t.ProjectId != null && t.AssigneeId == assigneeId))
         .OrderBy(t => t.Deadline)
         .ToListAsync(cancellationToken);
     }

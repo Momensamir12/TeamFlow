@@ -29,9 +29,11 @@ function CreateWorkspaceModal({ onClose, onWorkspaceCreated }) {
 
     try {
       const result = await createWorkspace(formData);
+      console.log('[CreateWorkspaceModal] Create result:', result);
 
       if (result.success) {
-        onWorkspaceCreated();
+        console.log('[CreateWorkspaceModal] Workspace created successfully, data:', result.data);
+        onWorkspaceCreated(result.data); // Pass the created workspace data
         onClose();
       } else {
         setError(result.message || 'Failed to create workspace');

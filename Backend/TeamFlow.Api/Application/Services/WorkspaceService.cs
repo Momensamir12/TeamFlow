@@ -35,7 +35,7 @@ public class WorkspaceService
         _mapper = mapper;
     }
 
-    public async Task CreateWorkspaceAsync(CreateWorkspaceDto dto, Guid userId, CancellationToken cancellationToken = default)
+    public async Task<WorkspaceListDto> CreateWorkspaceAsync(CreateWorkspaceDto dto, Guid userId, CancellationToken cancellationToken = default)
     {
         await _userValidator.ActiveUserAsync(userId);
 
@@ -54,6 +54,19 @@ public class WorkspaceService
         await _workspaceRepository.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Workspace created: {WorkspaceId} by user: {UserId}", workspace.Id, userId);
+
+        // Return the created workspace as DTO
+        return new WorkspaceListDto
+        {
+            Id = workspace.Id,
+            Name = workspace.Name,
+            Description = workspace.Description,
+            OwnerId = workspace.OwnerId,
+            MemberCount = 1, // Creator is the only member initially
+            ProjectCount = 0,
+            CreatedAt = workspace.CreatedAt,
+            IsArchived = workspace.IsArchived
+        };
     }
 
     public async Task UpdateWorkspaceAsync(UpdateWorkspaceDto dto, Guid userId, CancellationToken cancellationToken = default)
@@ -84,12 +97,10 @@ public class WorkspaceService
         
         foreach (var workspace in workspaces)
         {
-            var memberCount = await _workspaceRepository.GetWorkspaceMembersAsync(workspace.Id, cancellationToken);
-            var projectCount = await _projectRepository.GetWorkspaceProjectCountAsync(workspace.Id, cancellationToken);
-            
+            // Use preloaded collections from eager loading (no extra queries)
             var dto = _mapper.Map<WorkspaceListDto>(workspace);
-            dto.MemberCount = memberCount.Count;
-            dto.ProjectCount = projectCount;
+            dto.MemberCount = workspace.Members.Count;
+            dto.ProjectCount = workspace.Projects.Count;
             
             workspaceListDtos.Add(dto);
         }

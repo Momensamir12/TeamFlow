@@ -38,7 +38,7 @@ public class ProjectService
         _mapper = mapper;
     }
 
-    public async Task CreateProjectAsync(CreateProjectDto dto, Guid userId)
+    public async Task<ProjectListDto> CreateProjectAsync(CreateProjectDto dto, Guid userId)
     {
         await _userValidator.ActiveUserAsync(userId);
 
@@ -62,6 +62,20 @@ public class ProjectService
 
         await _projectRepository.AddAsync(project);
         await _projectRepository.SaveChangesAsync();
+
+        // Return the created project as DTO
+        return new ProjectListDto
+        {
+            Id = project.Id,
+            Name = project.Name,
+            Description = project.Description,
+            WorkspaceId = project.WorkspaceId,
+            WorkspaceName = workspace.Name,
+            TaskCount = 0,
+            MemberCount = 1, // Creator is the only member initially
+            CreatedAt = project.CreatedAt,
+            UpdatedAt = project.UpdatedAt
+        };
     }
 
     public async Task UpdateProjectAsync(UpdateProjectDto dto, Guid userId)

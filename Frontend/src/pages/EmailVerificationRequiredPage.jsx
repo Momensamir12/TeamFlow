@@ -4,7 +4,7 @@ import { Mail, CheckCircle, AlertCircle, Workflow } from 'lucide-react';
 import axios from 'axios';
 import { API_BASE_URL } from '../constants/config';
 
-function EmailVerificationRequiredPage() {
+function EmailVerificationRequiredPage({ onLogout }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -46,6 +46,10 @@ function EmailVerificationRequiredPage() {
     sessionStorage.clear();
     if (invitationToken) {
       sessionStorage.setItem('invitationToken', invitationToken);
+    }
+    // Call the parent logout handler to update App state
+    if (onLogout) {
+      onLogout();
     }
     navigate('/login');
   };

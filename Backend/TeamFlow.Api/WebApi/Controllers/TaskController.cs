@@ -22,12 +22,12 @@ public class TaskController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ApiResponse<string>>> CreateTask(CreateTaskDto userTaskDTO)
+    public async Task<ActionResult<ApiResponse<UserTaskDto>>> CreateTask(CreateTaskDto userTaskDTO)
     {
         var userId = _currentUserService.UserId;
-        await _taskService.CreateTaskAsync(userTaskDTO, userId);
+        var createdTask = await _taskService.CreateTaskAsync(userTaskDTO, userId);
 
-        return Ok(ApiResponse<string>.SuccessResponse("", "Task created successfully"));
+        return Ok(ApiResponse<UserTaskDto>.SuccessResponse(createdTask, "Task created successfully"));
     }
 
     [HttpGet("assigned")]

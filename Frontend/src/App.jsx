@@ -41,6 +41,11 @@ function App() {
     setEmailVerified(verified);
   };
 
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setEmailVerified(true);
+  };
+
   return (
     <Router>
       <div className="App">
@@ -59,7 +64,7 @@ function App() {
             path="/verify-email-required" 
             element={
               isLoggedIn && !emailVerified ? (
-                <EmailVerificationRequiredPage />
+                <EmailVerificationRequiredPage onLogout={handleLogout} />
               ) : (
                 <Navigate to={isLoggedIn ? "/dashboard" : "/login"} />
               )

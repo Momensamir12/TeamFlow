@@ -8,8 +8,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamFlow.Api.Tests", "Backe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backend", "Backend", "{D55F70C8-FF32-4C85-8596-A834FD6290C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamFlow.StressTests", "Backend\TeamFlow.StressTests\TeamFlow.StressTests.csproj", "{B0FFC78E-AC39-4697-88C1-213F503859EF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
