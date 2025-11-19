@@ -1,5 +1,5 @@
-export const API_BASE_URL = 'http://localhost:5000/api';
-export const SIGNAlR_URL = 'http://localhost:5000/notificationsHub'
+export const API_BASE_URL = 'https://teamflow-edbhf6fmdxe2cae2.polandcentral-01.azurewebsites.net/api';
+export const SIGNAlR_URL = 'https://teamflow-edbhf6fmdxe2.polandcentral-01.azurewebsites.net/notificationsHub'
 
 // If backend uses integers (0, 1, 2, 3):
 export const TASK_STATUS = {
