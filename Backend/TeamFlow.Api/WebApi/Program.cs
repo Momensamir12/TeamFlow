@@ -54,10 +54,12 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(builder.Configuration["AppSettings:FrontendUrl"]!) 
+        var frontendUrl = builder.Configuration["AppSettings:FrontendUrl"]!;
+        policy.WithOrigins(frontendUrl) 
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowCredentials()
+              .WithExposedHeaders("Content-Length", "X-JSON-Response");
     });
 });
 
@@ -206,7 +208,14 @@ builder.Services.AddScoped<TemplateRenderer>();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(TaskAssignedEventHandler).Assembly));
 builder.Services.AddScoped<INotificationService, SignalRNotificationService>();
 builder.Services.AddScoped<DomainEventDispatcher>();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+})
+.AddJsonProtocol(options =>
+{
+    options.PayloadSerializerOptions.PropertyNamingPolicy = null;
+});
 
 
 
@@ -227,5 +236,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapHub<NotificationHub>("/notificationsHub");
+app.MapHub<NotificationHub>("/notificationsHub")
+    .RequireAuthorization();
 app.Run();

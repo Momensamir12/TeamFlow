@@ -25,7 +25,7 @@ public class TaskService
         _taskAuthorizer = taskAuthorizer;
     }
 
-    public async Task CreateTaskAsync(CreateTaskDto taskDTO, Guid userId)
+    public async Task<UserTaskDto> CreateTaskAsync(CreateTaskDto taskDTO, Guid userId)
     {
         await _userValidator.ActiveUserAsync(userId);
 
@@ -43,6 +43,10 @@ public class TaskService
 
         await _taskRepository.AddAsync(task);
         await _taskRepository.SaveChangesAsync();
+
+        // Return the created task as DTO
+        var taskDto = _mapper.Map<UserTaskDto>(task);
+        return taskDto;
     }
 
     public async Task<List<UserTaskDto>> GetAssigneeTasksAsync(Guid userId)

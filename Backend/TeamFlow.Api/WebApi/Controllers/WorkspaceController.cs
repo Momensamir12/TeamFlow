@@ -22,11 +22,11 @@ public class WorkspaceController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ApiResponse<string>>> CreateWorkspace(CreateWorkspaceDto dto, CancellationToken cancellationToken)
+    public async Task<ActionResult<ApiResponse<WorkspaceListDto>>> CreateWorkspace(CreateWorkspaceDto dto, CancellationToken cancellationToken)
     {
         var userId = _currentUserService.UserId;
-        await _workspaceService.CreateWorkspaceAsync(dto, userId, cancellationToken);
-        return Ok(ApiResponse<string>.SuccessResponse("", "Workspace created successfully"));
+        var workspace = await _workspaceService.CreateWorkspaceAsync(dto, userId, cancellationToken);
+        return Ok(ApiResponse<WorkspaceListDto>.SuccessResponse(workspace, "Workspace created successfully"));
     }
 
     [HttpPut]

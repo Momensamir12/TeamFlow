@@ -50,8 +50,26 @@ function ProjectTasksTab({ projectId, projectMembers, userRole, onTasksUpdated }
     }
   };
 
-  const handleTaskUpdated = () => {
-    loadTasks();
+  const handleTaskUpdated = (updatedTask) => {
+    // If we have task data, update it optimistically
+    if (updatedTask && updatedTask.id) {
+      setTasks(prev => {
+        const existingIndex = prev.findIndex(t => t.id === updatedTask.id);
+        if (existingIndex >= 0) {
+          // Update existing task
+          const newTasks = [...prev];
+          newTasks[existingIndex] = updatedTask;
+          return newTasks;
+        } else {
+          // Add new task
+          return [updatedTask, ...prev];
+        }
+      });
+    } else {
+      // Fallback to refetching if no task data
+      loadTasks();
+    }
+    
     if (onTasksUpdated) {
       onTasksUpdated();
     }

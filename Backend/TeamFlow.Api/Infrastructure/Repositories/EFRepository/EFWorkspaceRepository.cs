@@ -50,7 +50,6 @@ public class EFWorkspaceRepository : IWorkspaceRepository
 
     public async Task<List<Workspace>> GetUserWorkspacesAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        // Join WorkspaceMembers with Workspaces
         return await _appDbContext.WorkspaceMembers
             .Where(wm => wm.UserId == userId && wm.RemovedAt == null)
             .Join(
@@ -59,6 +58,8 @@ public class EFWorkspaceRepository : IWorkspaceRepository
                 w => w.Id,
                 (wm, w) => w
             )
+            .Include(w => w.Members.Where(m => m.RemovedAt == null))
+            .Include(w => w.Projects.Where(p => !p.IsArchived))
             .ToListAsync(cancellationToken);
     }
 

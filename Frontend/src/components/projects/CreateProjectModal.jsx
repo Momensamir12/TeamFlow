@@ -32,7 +32,7 @@ function CreateProjectModal({ workspaceId, onClose, onProjectCreated }) {
       const result = await createProject(formData);
 
       if (result.success) {
-        onProjectCreated();
+        onProjectCreated(result.data); // Pass the created project data
         onClose();
       } else {
         setError(result.message || 'Failed to create project');

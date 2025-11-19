@@ -37,6 +37,31 @@ function WorkspaceList({ onWorkspaceSelect, searchQuery = '' }) {
     }
   };
 
+  const handleWorkspaceCreated = (newWorkspace) => {
+    // Add the new workspace to the local state instead of refetching
+    console.log('[WorkspaceList] New workspace created:', newWorkspace);
+    if (newWorkspace && (newWorkspace.id || newWorkspace.Id)) {
+      // Normalize property names from PascalCase to camelCase
+      const workspace = {
+        id: newWorkspace.id || newWorkspace.Id,
+        name: newWorkspace.name || newWorkspace.Name,
+        description: newWorkspace.description || newWorkspace.Description,
+        ownerId: newWorkspace.ownerId || newWorkspace.OwnerId,
+        memberCount: newWorkspace.memberCount !== undefined ? newWorkspace.memberCount : newWorkspace.MemberCount,
+        projectCount: newWorkspace.projectCount !== undefined ? newWorkspace.projectCount : newWorkspace.ProjectCount,
+        createdAt: newWorkspace.createdAt || newWorkspace.CreatedAt,
+        isArchived: newWorkspace.isArchived !== undefined ? newWorkspace.isArchived : newWorkspace.IsArchived
+      };
+      setWorkspaces(prev => {
+        console.log('[WorkspaceList] Adding workspace to list. Current count:', prev.length);
+        return [workspace, ...prev];
+      });
+    } else {
+      console.error('[WorkspaceList] Invalid workspace data, refetching:', newWorkspace);
+      loadWorkspaces();
+    }
+  };
+
   const filteredWorkspaces = workspaces.filter(workspace => {
     // First filter by archive status
     const matchesFilter = filter === 'archived' ? workspace.isArchived === true : workspace.isArchived === false;
@@ -192,7 +217,7 @@ function WorkspaceList({ onWorkspaceSelect, searchQuery = '' }) {
       {showCreateModal && (
         <CreateWorkspaceModal
           onClose={() => setShowCreateModal(false)}
-          onWorkspaceCreated={loadWorkspaces}
+          onWorkspaceCreated={handleWorkspaceCreated}
         />
       )}
 

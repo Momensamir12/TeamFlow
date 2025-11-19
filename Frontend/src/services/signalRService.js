@@ -27,21 +27,16 @@ class SignalRService {
         accessTokenFactory: () => {
           console.log('[SignalR] Providing access token for connection');
           return token;
-        }
+        },
+        transport: signalR.HttpTransportType.WebSockets,
+        withCredentials: true,
+        skipNegotiation: false
       })
       .withAutomaticReconnect()
       .configureLogging(signalR.LogLevel.Information)
       .build();
 
-    try {
-      await this.connection.start();
-      this.isConnected = true;
-      console.log('[SignalR] ✅ Connection established successfully. ConnectionId:', this.connection.connectionId);
-    } catch (err) {
-      console.error('[SignalR] ❌ Connection Error:', err);
-      this.isConnected = false;
-    }
-
+    // Setup event handlers BEFORE starting connection
     this.connection.onreconnecting((error) => {
       this.isConnected = false;
       console.warn('[SignalR] 🔄 Reconnecting...', error);
@@ -56,6 +51,15 @@ class SignalRService {
       this.isConnected = false;
       console.warn('[SignalR] ❌ Connection closed', error);
     });
+
+    try {
+      await this.connection.start();
+      this.isConnected = true;
+      console.log('[SignalR] ✅ Connection established successfully. ConnectionId:', this.connection.connectionId);
+    } catch (err) {
+      console.error('[SignalR] ❌ Connection Error:', err);
+      this.isConnected = false;
+    }
   }
 
   async stop() {

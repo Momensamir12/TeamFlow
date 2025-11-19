@@ -42,10 +42,15 @@ function DashboardPage({ onLogout }) {
     }
   }, [location.state]);
 
-  // Initialize user and SignalR on mount
+  // Initialize user, tasks, and SignalR on mount
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem('user'));
     setUser(userData);
+
+    // Load tasks on initial mount if on tasks tab
+    if (activeTab === 'tasks') {
+      loadTasks();
+    }
 
     // Initialize SignalR connection
     console.log('[DashboardPage] Component mounted, starting SignalR connection...');
@@ -93,12 +98,13 @@ function DashboardPage({ onLogout }) {
     };
   }, [activeTab]);
 
-  // Load tasks when switching to tasks tab
+  // Load tasks when switching to tasks tab or on initial mount
   useEffect(() => {
     if (activeTab === 'tasks') {
       loadTasks();
     }
-  }, [activeTab]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]); // loadTasks is stable, no need to include it
 
   const loadTasks = async () => {
     setLoading(true);
@@ -111,6 +117,34 @@ function DashboardPage({ onLogout }) {
       console.error('Error loading tasks:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleTaskCreated = (newTask) => {
+    // Add the new task to local state instead of refetching
+    console.log('[DashboardPage] New task created:', newTask);
+    if (newTask && (newTask.id || newTask.Id)) {
+      // Normalize property names from PascalCase to camelCase
+      const task = {
+        id: newTask.id || newTask.Id,
+        title: newTask.title || newTask.Title,
+        description: newTask.description || newTask.Description,
+        status: newTask.status !== undefined ? newTask.status : newTask.Status,
+        deadline: newTask.deadline || newTask.Deadline,
+        priority: newTask.priority !== undefined ? newTask.priority : newTask.Priority,
+        assigneeId: newTask.assigneeId || newTask.AssigneeId,
+        ownerId: newTask.ownerId || newTask.OwnerId,
+        assignerUsername: newTask.assignerUsername || newTask.AssignerUsername,
+        projectId: newTask.projectId || newTask.ProjectId
+      };
+      setTasks(prev => {
+        console.log('[DashboardPage] Adding task to list. Current count:', prev.length);
+        return [task, ...prev];
+      });
+    } else {
+      console.error('[DashboardPage] Invalid task data, refetching:', newTask);
+      // Fallback to refetching if no task data returned
+      loadTasks();
     }
   };
 
@@ -197,7 +231,7 @@ function DashboardPage({ onLogout }) {
           {showCreateTask && (
             <AddTaskForm
               onClose={() => setShowCreateTask(false)}
-              onTaskCreated={loadTasks}
+              onTaskCreated={handleTaskCreated}
             />
           )}
         </>

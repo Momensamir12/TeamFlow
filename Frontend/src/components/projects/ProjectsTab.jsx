@@ -43,9 +43,32 @@ function ProjectsTab({ workspaceId, userRole, onProjectUpdated, onProjectClick }
     }
   };
 
-  const handleProjectCreated = () => {
-    loadProjects();
-    onProjectUpdated();
+  const handleProjectCreated = (newProject) => {
+    // Add the new project to local state instead of refetching
+    console.log('[ProjectsTab] New project created:', newProject);
+    if (newProject && (newProject.id || newProject.Id)) {
+      // Normalize property names from PascalCase to camelCase
+      const project = {
+        id: newProject.id || newProject.Id,
+        name: newProject.name || newProject.Name,
+        description: newProject.description || newProject.Description,
+        workspaceId: newProject.workspaceId || newProject.WorkspaceId,
+        workspaceName: newProject.workspaceName || newProject.WorkspaceName,
+        taskCount: newProject.taskCount !== undefined ? newProject.taskCount : newProject.TaskCount,
+        memberCount: newProject.memberCount !== undefined ? newProject.memberCount : newProject.MemberCount,
+        createdAt: newProject.createdAt || newProject.CreatedAt,
+        updatedAt: newProject.updatedAt || newProject.UpdatedAt
+      };
+      setProjects(prev => {
+        console.log('[ProjectsTab] Adding project to list. Current count:', prev.length);
+        return [project, ...prev];
+      });
+      onProjectUpdated();
+    } else {
+      console.error('[ProjectsTab] Invalid project data, refetching:', newProject);
+      loadProjects();
+      onProjectUpdated();
+    }
   };
 
   const canCreate = canCreateProject(userRole);
