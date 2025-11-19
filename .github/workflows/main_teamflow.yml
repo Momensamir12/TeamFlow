@@ -24,10 +24,14 @@ jobs:
           dotnet-version: '9.x'
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build Backend/TeamFlow.Api/app.csproj --configuration Release
 
       - name: dotnet publish
+<<<<<<< HEAD
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+=======
+        run: dotnet publish Backend/TeamFlow.Api/app.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+>>>>>>> 0876646 (Fix Azure workflow to build API project)
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -38,13 +42,30 @@ jobs:
   deploy:
     runs-on: windows-latest
     needs: build
+<<<<<<< HEAD
     
+=======
+    permissions:
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
+
+>>>>>>> 0876646 (Fix Azure workflow to build API project)
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: .net-app
       
+<<<<<<< HEAD
+=======
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_CA0B816FBD0945C8849ADB286DD488A0 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_BDF36A8A4CE04CC8867B1F305DDD9D87 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3DCB8DE2A83D4133917FDB38E01AB9B5 }}
+
+>>>>>>> 0876646 (Fix Azure workflow to build API project)
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
