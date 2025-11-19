@@ -179,67 +179,9 @@ dotnet ef database update
 - `PUT /api/comments/{id}` - Update comment
 - `DELETE /api/comments/{id}` - Delete comment
 
-### WebSocket
-- `ws://localhost:5000/notificationsHub` - SignalR notification hub
 
-## Performance
 
-### Benchmarks
-- **Workspace Listing**: 100% success rate, ~1.35s mean latency
-- **Task Operations**: 100% success rate, ~5.6ms mean latency
-- **Sustainable Load**: 5-10 RPS (requests per second) for stable performance
 
-## Development
-
-### Running Tests
-```bash
-cd Backend/TeamFlow.Api.Tests
-dotnet test
-```
-
-### Load Testing
-```bash
-cd LoadTests
-dotnet run
-```
-
-## Security Considerations
-
-- All endpoints require JWT authentication
-- Email verification is mandatory for critical operations
-- Passwords are hashed using industry-standard algorithms
-- CORS is configured to allow only the frontend domain
-- SignalR connections are secured with JWT tokens
-- Global exception handler prevents sensitive information exposure
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Support
-
-For support, email support@teamflow.dev or open an issue on GitHub.
-
-## Roadmap
-
-- [ ] Mobile app (iOS/Android)
-- [ ] Advanced analytics and reporting
-- [ ] Task templates and automation
-- [ ] Kanban board view
-- [ ] Calendar view integration
-- [ ] API rate limiting
-- [ ] Advanced search and filtering
-- [ ] Bulk operations
-- [ ] Task dependencies
-- [ ] Time tracking
 
 ---
 
