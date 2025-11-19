@@ -1,0 +1,93 @@
+# Build and compilation
+bin/
+obj/
+*.dll
+*.exe
+*.so
+*.dylib
+*.pdb
+dist/
+build/
+
+# NuGet
+.nuget/
+*.nupkg
+*.snupkg
+packages/
+.packages/
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+.npm
+package-lock.json
+dist/
+build/
+
+# IDE and Editor
+.vs/
+.vscode/
+*.sln.iml
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+._*
+
+# Logs
+logs/
+*.log
+lerna-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Testing
+.pytest_cache/
+.coverage
+
+# Misc
+.cache/
+.parcel-cache/
+dist/
+out/
+.next/
+.nuxt/
+.cache/
+.vuepress/dist/
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+.venv
+env/
+venv/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
