@@ -179,6 +179,28 @@ dotnet ef database update
 - `PUT /api/comments/{id}` - Update comment
 - `DELETE /api/comments/{id}` - Delete comment
 
+### WebSocket
+- `ws://localhost:5000/notificationsHub` - SignalR notification hub
+
+## API Documentation
+
+### Swagger/OpenAPI
+The API includes comprehensive Swagger documentation with detailed descriptions for every endpoint.
+
+**Access Swagger UI**: `http://localhost:5000/swagger` (Development environment)
+
+**Features:**
+- Interactive API explorer with complete endpoint documentation
+- Detailed descriptions for all operations and parameters
+- Request/response schema examples for all DTOs
+- JWT Bearer token authentication testing
+- Real-time API testing capabilities
+- Auto-generated from XML code comments
+
+**Alternative Documentation**: The project also includes Scalar API documentation at `http://localhost:5000/scalar` for a modern, alternative documentation experience.
+
+## Performance
+
 
 
 
