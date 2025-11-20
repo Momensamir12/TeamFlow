@@ -6,8 +6,8 @@
 # Frontend runs on http://localhost:5173
 #
 # Prerequisites:
-# - MySQL container running on port 3306 (docker-compose up in Docker/ directory)
-# - Database: TeamFlowDb_Dev
+# - Docker installed and running
+# - Database will be created automatically if it doesn't exist
 # - User: root, Password: secret
 
 set -e
@@ -19,13 +19,43 @@ echo "=========================================="
 echo "TeamFlow Local Development Environment"
 echo "=========================================="
 echo ""
-echo "Starting services..."
-echo ""
 
 # Colors for output
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
+
+# Check if Docker is running
+if ! docker info > /dev/null 2>&1; then
+    echo "${YELLOW}⚠ Docker is not running. Please start Docker and try again.${NC}"
+    exit 1
+fi
+
+echo "${BLUE}Checking Docker MySQL container...${NC}"
+
+# Check if MySQL container exists
+if ! docker ps -a --format '{{.Names}}' | grep -q "^mysql-db$"; then
+    echo "${BLUE}Creating MySQL container from docker-compose...${NC}"
+    cd Docker
+    docker-compose -f mysql-adm-docker-compose.yml up -d
+    cd ..
+    sleep 3
+elif ! docker ps --format '{{.Names}}' | grep -q "^mysql-db$"; then
+    echo "${BLUE}Starting MySQL container...${NC}"
+    docker start mysql-db
+    sleep 3
+else
+    echo "${GREEN}✓ MySQL container is running${NC}"
+fi
+
+# Create database if it doesn't exist
+echo "${BLUE}Ensuring TeamFlowDb_Dev database exists...${NC}"
+docker exec -it mysql-db mysql -uroot -psecret -e "CREATE DATABASE IF NOT EXISTS TeamFlowDb_Dev;" 2>/dev/null || true
+
+echo ""
+echo "Starting services..."
+echo ""
 
 # Check if node_modules exists in Frontend
 if [ ! -d "Frontend/node_modules" ]; then
@@ -76,3 +106,4 @@ trap "kill $BACKEND_PID $FRONTEND_PID 2>/dev/null; echo ''; echo 'Services stopp
 
 # Wait for both processes
 wait $BACKEND_PID $FRONTEND_PID
+
