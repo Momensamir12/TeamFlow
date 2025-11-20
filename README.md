@@ -34,7 +34,7 @@ A moderntask management and team collaboration platform that helps teams organiz
 - **Role-Based Authorization**: Implement role-based access control at workspace and project levels
 - **Task-Level Authorization**: Fine-grained permission control for task ownership and assignment
 
-#### ⚡ Real-Time Communication
+####  Real-Time Communication
 - **SignalR Hub**: Real-time WebSocket connections for instant updates
 
 ## Tech Stack
