@@ -78,11 +78,6 @@ chmod +x start-local.sh
 ./start-local.sh
 ```
 
-**Windows:**
-```cmd
-start-local.bat
-```
-
 This will:
 - Start MySQL container (if not already running)
 - Launch backend on `http://localhost:5000`
