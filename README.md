@@ -37,6 +37,16 @@ A moderntask management and team collaboration platform that helps teams organiz
 ####  Real-Time Communication
 - **SignalR Hub**: Real-time WebSocket connections for instant updates
 
+## Deployment
+
+### Azure Deployment (Production)
+
+1. **Backend**: Deployed to Azure App Service
+   - Uses SQLite database
+
+2. **Frontend**: Deployed to Azure Static Web Apps
+   - URL: `https://frontend2.z36.web.core.windows.net`
+
 ## Tech Stack
 
 ### Backend
@@ -114,17 +124,6 @@ npm run dev
 
 The backend will start on `http://localhost:5000` and frontend on `http://localhost:5173`
 
-## Deployment
-
-### Azure Deployment (Production)
-
-The `azure-deployment` branch is configured for Azure:
-
-1. **Backend**: Deployed to Azure App Service
-   - Uses SQLite database
-
-2. **Frontend**: Deployed to Azure Static Web Apps
-   - URL: `https://frontend2.z36.web.core.windows.net`
 
 ### Accessing the Application
 
