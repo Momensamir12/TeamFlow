@@ -1,5 +1,40 @@
-export const API_BASE_URL = 'https://teamflow-edbhf6fmdxe2cae2.polandcentral-01.azurewebsites.net/api';
-export const SIGNAlR_URL = 'https://teamflow-edbhf6fmdxe2cae2.polandcentral-01.azurewebsites.net/notificationsHub'
+// Determine environment and set API URLs accordingly
+// For local development, use http://localhost:5000
+// For production, use Azure endpoint
+const isDevelopment = import.meta.env.DEV;
+
+const getApiBaseUrl = () => {
+  // Check for environment variable override first
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // If running locally in dev mode, use localhost
+  if (isDevelopment) {
+    return 'http://localhost:5000/api';
+  }
+  
+  // Production Azure endpoint
+  return 'https://teamflow-edbhf6fmdxe2cae2.polandcentral-01.azurewebsites.net/api';
+};
+
+const getSignalRUrl = () => {
+  // Check for environment variable override first
+  if (import.meta.env.VITE_SIGNALR_URL) {
+    return import.meta.env.VITE_SIGNALR_URL;
+  }
+  
+  // If running locally in dev mode, use localhost
+  if (isDevelopment) {
+    return 'http://localhost:5000/notificationsHub';
+  }
+  
+  // Production Azure endpoint
+  return 'https://teamflow-edbhf6fmdxe2cae2.polandcentral-01.azurewebsites.net/notificationsHub';
+};
+
+export const API_BASE_URL = getApiBaseUrl();
+export const SIGNAlR_URL = getSignalRUrl();
 
 // If backend uses integers (0, 1, 2, 3):
 export const TASK_STATUS = {

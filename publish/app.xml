@@ -1,0 +1,309 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>app</name>
+    </assembly>
+    <members>
+        <member name="T:App.Migrations.AddTaskComments">
+            <inheritdoc />
+        </member>
+        <member name="M:App.Migrations.AddTaskComments.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:App.Migrations.AddTaskComments.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:App.Api.Controllers.ProjectController">
+            <summary>
+            Project management endpoints for creating and managing projects within workspaces.
+            </summary>
+        </member>
+        <member name="M:App.Api.Controllers.ProjectController.CreateProject(App.Application.Dto.CreateProjectDto)">
+            <summary>
+            Create a new project within a workspace.
+            </summary>
+            <param name="dto">Project details including name, description, and workspace ID</param>
+            <returns>The newly created project</returns>
+        </member>
+        <member name="M:App.Api.Controllers.ProjectController.UpdateProject(App.Application.Dto.UpdateProjectDto)">
+            <summary>
+            Update project details such as name and description.
+            </summary>
+            <param name="dto">Project ID and updated details</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="M:App.Api.Controllers.ProjectController.GetProjectDetails(System.Guid)">
+            <summary>
+            Get detailed information about a specific project including members and task count.
+            </summary>
+            <param name="projectId">ID of the project to retrieve</param>
+            <returns>Detailed project information</returns>
+        </member>
+        <member name="M:App.Api.Controllers.ProjectController.GetWorkspaceProjects(System.Guid)">
+            <summary>
+            Get all projects in a specific workspace.
+            </summary>
+            <param name="workspaceId">ID of the workspace</param>
+            <returns>List of projects in the workspace</returns>
+        </member>
+        <member name="M:App.Api.Controllers.ProjectController.AddMemberToProject(App.Application.Dto.AddProjectMemberDto)">
+            <summary>
+            Add a team member to a project.
+            </summary>
+            <param name="dto">Project ID and member user ID</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="M:App.Api.Controllers.ProjectController.RemoveMemberFromProject(System.Guid,System.Guid)">
+            <summary>
+            Remove a team member from a project.
+            </summary>
+            <param name="projectId">ID of the project</param>
+            <param name="memberUserId">ID of the member to remove</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="M:App.Api.Controllers.ProjectController.GetMyRole(System.Guid)">
+            <summary>
+            Get the current user's role in a project (Viewer, Member, Admin).
+            </summary>
+            <param name="projectId">ID of the project</param>
+            <returns>User's role level as integer (0=Viewer, 1=Member, 2=Admin)</returns>
+        </member>
+        <member name="M:App.Api.Controllers.ProjectController.GetProjectTasks(System.Guid)">
+            <summary>
+            Get all tasks in a project.
+            </summary>
+            <param name="projectId">ID of the project</param>
+            <returns>List of project tasks</returns>
+        </member>
+        <member name="T:App.Api.Controllers.TaskController">
+            <summary>
+            Task management endpoints for creating, retrieving, and updating tasks.
+            </summary>
+        </member>
+        <member name="M:App.Api.Controllers.TaskController.CreateTask(CreateTaskDto)">
+            <summary>
+            Create a new task (personal or project-based).
+            </summary>
+            <param name="userTaskDTO">Task details including title, description, priority, deadline, and optional assignee</param>
+            <returns>The newly created task</returns>
+        </member>
+        <member name="M:App.Api.Controllers.TaskController.GetAssignedTasks">
+            <summary>
+            Get all tasks assigned to the current user.
+            Includes personal tasks owned by the user and project tasks assigned to them.
+            </summary>
+            <returns>List of tasks assigned to or owned by the user</returns>
+        </member>
+        <member name="M:App.Api.Controllers.TaskController.UpdateTaskStatus(App.Application.Dto.UpdateTaskStatusDto)">
+            <summary>
+            Update the status of a task (To Do, In Progress, Done, Blocked).
+            </summary>
+            <param name="dto">Task ID and new status</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="M:App.Api.Controllers.TaskController.UpdateTask(App.Application.Dto.UpdateTaskDto)">
+            <summary>
+            Update multiple properties of a task at once.
+            </summary>
+            <param name="dto">Task ID and properties to update</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="M:App.Api.Controllers.TaskController.UpdateTaskTitle(App.Application.Dto.UpdateTaskTitleDto)">
+            <summary>
+            Update the title of a task.
+            </summary>
+            <param name="dto">Task ID and new title</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="M:App.Api.Controllers.TaskController.UpdateTaskDescription(App.Application.Dto.UpdateTaskDescriptionDto)">
+            <summary>
+            Update the description of a task.
+            </summary>
+            <param name="dto">Task ID and new description</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="M:App.Api.Controllers.TaskController.UpdateTaskDeadline(App.Application.Dto.UpdateTaskDeadlineDto)">
+            <summary>
+            Update the deadline of a task.
+            </summary>
+            <param name="dto">Task ID and new deadline date</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="M:App.Api.Controllers.TaskController.UpdateTaskPriority(App.Application.Dto.UpdateTaskPriorityDto)">
+            <summary>
+            Update the priority level of a task (Low, Medium, High, Urgent).
+            </summary>
+            <param name="dto">Task ID and new priority level</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="T:App.Api.Controllers.WorkspaceController">
+            <summary>
+            Workspace management endpoints for creating, managing, and organizing team workspaces.
+            </summary>
+        </member>
+        <member name="M:App.Api.Controllers.WorkspaceController.CreateWorkspace(App.Application.Dto.CreateWorkspaceDto,System.Threading.CancellationToken)">
+            <summary>
+            Create a new workspace for organizing team projects and tasks.
+            </summary>
+            <param name="dto">Workspace details including name and description</param>
+            <param name="cancellationToken">Cancellation token</param>
+            <returns>The newly created workspace</returns>
+        </member>
+        <member name="M:App.Api.Controllers.WorkspaceController.UpdateWorkspace(App.Application.Dto.UpdateWorkspaceDto,System.Threading.CancellationToken)">
+            <summary>
+            Update workspace details such as name and description.
+            </summary>
+            <param name="dto">Workspace ID and updated details</param>
+            <param name="cancellationToken">Cancellation token</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="M:App.Api.Controllers.WorkspaceController.GetUserWorkspaces(System.Threading.CancellationToken)">
+            <summary>
+            Get all workspaces the current user is a member of.
+            </summary>
+            <param name="cancellationToken">Cancellation token</param>
+            <returns>List of user's workspaces with member and project counts</returns>
+        </member>
+        <member name="M:App.Api.Controllers.WorkspaceController.GetWorkspaceDetails(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Get detailed information about a specific workspace including members and projects.
+            </summary>
+            <param name="workspaceId">ID of the workspace to retrieve</param>
+            <param name="cancellationToken">Cancellation token</param>
+            <returns>Detailed workspace information</returns>
+        </member>
+        <member name="M:App.Api.Controllers.WorkspaceController.ArchiveWorkspace(System.Guid)">
+            <summary>
+            Archive a workspace to hide it from the active workspace list.
+            </summary>
+            <param name="workspaceId">ID of the workspace to archive</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="M:App.Api.Controllers.WorkspaceController.UnarchiveWorkspace(System.Guid)">
+            <summary>
+            Unarchive a workspace to restore it to the active workspace list.
+            </summary>
+            <param name="workspaceId">ID of the workspace to unarchive</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="M:App.Api.Controllers.WorkspaceController.JoinByCode(System.String)">
+            <summary>
+            Join an existing workspace using an invitation code.
+            </summary>
+            <param name="code">Workspace invitation code</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="M:App.Api.Controllers.WorkspaceController.GetWorkspaceCode(System.Guid)">
+            <summary>
+            Get the invitation code for a workspace to share with other users.
+            </summary>
+            <param name="workspaceId">ID of the workspace</param>
+            <returns>The workspace invitation code</returns>
+        </member>
+        <member name="M:App.Api.Controllers.WorkspaceController.RegenerateWorkspaceCode(System.Guid)">
+            <summary>
+            Regenerate the invitation code for a workspace, invalidating the previous code.
+            </summary>
+            <param name="workspaceId">ID of the workspace</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="M:App.Api.Controllers.WorkspaceController.RemoveMember(System.Guid,System.Guid)">
+            <summary>
+            Remove a member from a workspace.
+            </summary>
+            <param name="workspaceId">ID of the workspace</param>
+            <param name="memberUserId">ID of the member to remove</param>
+            <returns>Success message</returns>
+        </member>
+        <member name="T:app.Migrations.SecurityUser">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.SecurityUser.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.SecurityUser.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.SecurityUser.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:app.Migrations.AddEmailVerification">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AddEmailVerification.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AddEmailVerification.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AddEmailVerification.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:app.Migrations.AppDb.InitialCreate">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AppDb.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AppDb.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AppDb.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:app.Migrations.AppDb.AddedWorkspaceCode">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AppDb.AddedWorkspaceCode.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AppDb.AddedWorkspaceCode.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AppDb.AddedWorkspaceCode.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:app.Migrations.AppDb.ProjectMember">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AppDb.ProjectMember.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AppDb.ProjectMember.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AppDb.ProjectMember.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:app.Migrations.AppDb.ProjectMember2">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AppDb.ProjectMember2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AppDb.ProjectMember2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AppDb.ProjectMember2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:app.Migrations.AppDb.AddTaskComments">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AppDb.AddTaskComments.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AppDb.AddTaskComments.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:app.Migrations.AppDb.AddTaskComments.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:TeamFlow.Api.WebApi.Controllers.HealthCheckController.Get">
+            <summary>
+            Health check endpoint to verify the API is running
+            </summary>
+            <returns>Returns OK status with timestamp</returns>
+        </member>
+    </members>
+</doc>
