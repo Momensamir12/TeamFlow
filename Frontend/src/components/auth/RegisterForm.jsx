@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { registerUser } from '../../api/authenticationApi';
-import { UserPlus, Mail } from 'lucide-react';
+import { UserPlus, Mail, Check, X } from 'lucide-react';
 
 function RegisterForm({ onSuccess, onSwitchToLogin }) {
   const [formData, setFormData] = useState({
@@ -14,14 +14,38 @@ function RegisterForm({ onSuccess, onSwitchToLogin }) {
   const [loading, setLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
+  // Password validation rules
+  const passwordValidation = {
+    minLength: formData.password.length >= 8,
+    hasUpperCase: /[A-Z]/.test(formData.password),
+    hasLowerCase: /[a-z]/.test(formData.password),
+    hasNumber: /[0-9]/.test(formData.password),
+    hasSpecialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(formData.password)
+  };
+
+  const isPasswordValid = Object.values(passwordValidation).every(v => v);
+
+  const ValidationRule = ({ met, text }) => (
+    <div className="flex items-center gap-2 text-sm">
+      {met ? (
+        <Check size={16} className="text-green-600" />
+      ) : (
+        <X size={16} className="text-gray-300" />
+      )}
+      <span className={met ? 'text-green-600' : 'text-gray-500'}>
+        {text}
+      </span>
+    </div>
+  );
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    // Basic validation
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+    // Validate password
+    if (!isPasswordValid) {
+      setError('Password does not meet all requirements');
       setLoading(false);
       return;
     }
@@ -145,21 +169,45 @@ function RegisterForm({ onSuccess, onSwitchToLogin }) {
             type="password"
             value={formData.password}
             onChange={(e) => handleChange('password', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
+              formData.password && isPasswordValid ? 'border-green-300' : 'border-gray-300'
+            }`}
             placeholder="••••••••"
             required
             disabled={loading}
-            minLength={6}
           />
-          <p className="text-xs text-gray-500 mt-1">
-            Must be at least 6 characters long
-          </p>
+          
+          {formData.password && (
+            <div className="mt-3 p-3 bg-gray-50 rounded-lg space-y-2">
+              <p className="text-xs font-semibold text-gray-700 mb-2">Password Requirements:</p>
+              <ValidationRule 
+                met={passwordValidation.minLength} 
+                text="At least 8 characters" 
+              />
+              <ValidationRule 
+                met={passwordValidation.hasUpperCase} 
+                text="Contains an uppercase letter (A-Z)" 
+              />
+              <ValidationRule 
+                met={passwordValidation.hasLowerCase} 
+                text="Contains a lowercase letter (a-z)" 
+              />
+              <ValidationRule 
+                met={passwordValidation.hasNumber} 
+                text="Contains a number (0-9)" 
+              />
+              <ValidationRule 
+                met={passwordValidation.hasSpecialChar} 
+                text="Contains a special character (!@#$%^&* etc.)" 
+              />
+            </div>
+          )}
         </div>
 
         <button
           type="submit"
-          disabled={loading}
-          className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+          disabled={loading || !isPasswordValid}
+          className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <UserPlus size={20} />
           {loading ? 'Creating Account...' : 'Sign Up'}
