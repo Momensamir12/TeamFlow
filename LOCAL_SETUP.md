@@ -1,7 +1,5 @@
 # TeamFlow Local Development Setup
 
-This guide will help you set up and run TeamFlow locally.
-
 ## Prerequisites
 
 ### 1. Docker (for MySQL)
