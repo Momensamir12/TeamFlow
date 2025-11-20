@@ -41,51 +41,138 @@ A modern, real-time task management and team collaboration platform that helps t
 
 ### Backend
 - **Framework**: ASP.NET Core 9.0
-- **Database**: MySQL with Entity Framework Core
+- **Database**: MySQL (local dev) / SQLite (Azure production)
+- **ORM**: Entity Framework Core with Pomelo MySQL provider
 - **Real-Time**: SignalR for WebSocket communication
+- **Authentication**: JWT Bearer tokens with HS512 algorithm
 - **Validation**: FluentValidation
+- **Email**: Mock email service for development
 
+### Frontend
+- **Framework**: React 19
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS v4
+- **HTTP Client**: Axios
+- **Icons**: Lucide React
+- **State Management**: React Hooks
+
+### Infrastructure
+- **Backend Hosting**: Azure App Service
+- **Frontend Hosting**: Azure Static Web Apps
+- **Database (Production)**: SQLite (Azure free tier)
+- **Database (Development)**: MySQL 8.0 (Docker container)
+- **Container Management**: Docker Compose
 
 ## Getting Started
 
-### Prerequisites
+📖 **For detailed setup instructions, see [LOCAL_SETUP.md](./LOCAL_SETUP.md)**
+
+### Quick Start
+
+#### Prerequisites
 - .NET 9.0 SDK
 - Node.js 16+
-- MySQL 8.0+
+- Docker (for MySQL)
 
-### Backend Setup
+#### Option 1: Use Startup Script (Recommended)
 
+**Linux/macOS:**
+```bash
+chmod +x start-local.sh
+./start-local.sh
+```
+
+**Windows:**
+```cmd
+start-local.bat
+```
+
+This will:
+- Start MySQL container (if not already running)
+- Launch backend on `http://localhost:5000`
+- Launch frontend on `http://localhost:5173`
+
+#### Option 2: Manual Setup
+
+**1. Start MySQL Container:**
+```bash
+cd Docker
+docker-compose -f mysql-adm-docker-compose.yml up -d
+```
+
+**2. Create Database:**
+```bash
+docker exec -it mysql-db mysql -uroot -psecret -e "CREATE DATABASE IF NOT EXISTS TeamFlowDb_Dev;"
+```
+
+**3. Start Backend:**
 ```bash
 cd Backend/TeamFlow.Api
 dotnet restore
-dotnet appsettings.json 
+dotnet ef database update --context SecurityDbContext
+dotnet ef database update --context AppDbContext
 dotnet run
 ```
 
-
-The frontend will start on `http://localhost:5173`
-
-### Database Setup
-
-Ensure MySQL is running and configure the connection string in `appsettings.json`:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=TeamFlowDb;User=root;Password=your_password;"
-  }
-}
+**4. Start Frontend:**
+```bash
+cd Frontend
+npm install
+npm run dev
 ```
 
-Run migrations:
-```bash
-dotnet ef database update
+The backend will start on `http://localhost:5000` and frontend on `http://localhost:5173`
+
+### Configuration
+
+The application automatically detects the environment:
+
+**Development (main branch):**
+- Uses MySQL on `localhost:3306`
+- Connection: `Server=localhost;Port=3306;Database=TeamFlowDb_Dev;User=root;Password=secret;`
+- Frontend points to `http://localhost:5000/api`
+
+**Production (azure-deployment branch):**
+- Uses SQLite with `Data Source=teamflow.db`
+- Frontend points to Azure App Service URL
+- Auto-applies migrations on startup
+
+### Accessing the Application
+
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:5000/api
+- **Swagger UI**: http://localhost:5000/swagger
+- **Database Admin (Adminer)**: http://localhost:8080
+
+## Project Structure
+
+```
+TeamFlow/
+├── Backend/
+│   └── TeamFlow.Api/
+│       ├── Application/         # Business logic & services
+│       ├── Domain/              # Domain models & events
+│       ├── Infrastructure/      # Data access & external services
+│       ├── WebApi/              # Controllers & middleware
+│       └── Migrations/          # EF Core migrations
+├── Frontend/
+│   └── src/
+│       ├── components/          # React components
+│       ├── pages/               # Page components
+│       ├── api/                 # API client functions
+│       ├── services/            # Business services (SignalR, etc.)
+│       └── constants/           # Configuration & constants
+├── Docker/                      # Docker compose files
+├── docs/                        # Documentation
+├── start-local.sh              # Linux/macOS startup script
+├── start-local.bat             # Windows startup script
+└── LOCAL_SETUP.md              # Detailed setup guide
 ```
 
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register a new user
+- `POST /api/users/register` - Register a new user
 - `POST /api/auth/login` - Login with credentials
 - `POST /api/auth/verify-email` - Verify email address
 - `POST /api/auth/resend-verification` - Resend verification email
@@ -127,10 +214,18 @@ dotnet ef database update
 - `PUT /api/comments/{id}` - Update comment
 - `DELETE /api/comments/{id}` - Delete comment
 
+## Deployment
 
+### Azure Deployment (Production)
 
+The `azure-deployment` branch is configured for Azure:
 
+1. **Backend**: Deployed to Azure App Service
+   - Uses SQLite database
+   - Auto-applies migrations on startup
+   - URL: `https://teamflow-edbhf6fmdxe2cae2.polandcentral-01.azurewebsites.net`
 
----
+2. **Frontend**: Deployed to Azure Static Web Apps
+   - Optimized production build
+   - URL: `https://frontend2.z36.web.core.windows.net`
 
-**TeamFlow** - Making team collaboration effortless
