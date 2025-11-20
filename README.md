@@ -69,6 +69,13 @@ A modern, real-time task management and team collaboration platform that helps t
 
 ### Quick Start
 
+Clone the repository and change into the project directory:
+
+```bash
+git clone https://github.com/Momensamir12/TeamFlow.git
+cd TeamFlow
+```
+
 #### Prerequisites
 - .NET 9.0 SDK
 - Node.js 16+
@@ -211,6 +218,9 @@ TeamFlow/
 - `POST /api/comments` - Add comment to task
 - `PUT /api/comments/{id}` - Update comment
 - `DELETE /api/comments/{id}` - Delete comment
+
+
+
 
 
 
