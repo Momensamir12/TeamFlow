@@ -123,19 +123,17 @@ npm run dev
 
 The backend will start on `http://localhost:5000` and frontend on `http://localhost:5173`
 
-### Configuration
+## Deployment
 
-The application automatically detects the environment:
+### Azure Deployment (Production)
 
-**Development (main branch):**
-- Uses MySQL on `localhost:3306`
-- Connection: `Server=localhost;Port=3306;Database=TeamFlowDb_Dev;User=root;Password=secret;`
-- Frontend points to `http://localhost:5000/api`
+The `azure-deployment` branch is configured for Azure:
 
-**Production (azure-deployment branch):**
-- Uses SQLite with `Data Source=teamflow.db`
-- Frontend points to Azure App Service URL
-- Auto-applies migrations on startup
+1. **Backend**: Deployed to Azure App Service
+   - Uses SQLite database
+
+2. **Frontend**: Deployed to Azure Static Web Apps
+   - URL: `https://frontend2.z36.web.core.windows.net`
 
 ### Accessing the Application
 
@@ -214,15 +212,5 @@ TeamFlow/
 - `PUT /api/comments/{id}` - Update comment
 - `DELETE /api/comments/{id}` - Delete comment
 
-## Deployment
 
-### Azure Deployment (Production)
-
-The `azure-deployment` branch is configured for Azure:
-
-1. **Backend**: Deployed to Azure App Service
-   - Uses SQLite database
-
-2. **Frontend**: Deployed to Azure Static Web Apps
-   - URL: `https://frontend2.z36.web.core.windows.net`
 
