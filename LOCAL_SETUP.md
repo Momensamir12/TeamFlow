@@ -129,12 +129,3 @@ lsof -ti:5173 | xargs kill -9
    mysql -h localhost -P 3306 -u root -psecret
    ```
 
-### Frontend Not Connecting to Backend
-Make sure the frontend config is detecting development mode correctly. The file `Frontend/src/constants/config.js` should automatically use localhost URLs when running in dev mode.
-
-## Environment Variables
-
-The application uses these configuration files:
-- `Backend/TeamFlow.Api/appsettings.json` - Base configuration
-- `Backend/TeamFlow.Api/appsettings.Development.json` - Development overrides
-- `Frontend/src/constants/config.js` - Frontend API URLs (auto-detects environment)
