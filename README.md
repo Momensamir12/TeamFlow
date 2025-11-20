@@ -42,30 +42,19 @@ A modern, real-time task management and team collaboration platform that helps t
 ### Backend
 - **Framework**: ASP.NET Core 9.0
 - **Database**: MySQL (local dev) / SQLite (Azure production)
-- **ORM**: Entity Framework Core with Pomelo MySQL provider
 - **Real-Time**: SignalR for WebSocket communication
 - **Authentication**: JWT Bearer tokens with HS512 algorithm
 - **Validation**: FluentValidation
-- **Email**: Mock email service for development
 
 ### Frontend
 - **Framework**: React 19
 - **Build Tool**: Vite
 - **Styling**: Tailwind CSS v4
-- **HTTP Client**: Axios
-- **Icons**: Lucide React
-- **State Management**: React Hooks
 
-### Infrastructure
-- **Backend Hosting**: Azure App Service
-- **Frontend Hosting**: Azure Static Web Apps
-- **Database (Production)**: SQLite (Azure free tier)
-- **Database (Development)**: MySQL 8.0 (Docker container)
-- **Container Management**: Docker Compose
 
 ## Getting Started
 
-📖 **For detailed setup instructions, see [LOCAL_SETUP.md](./LOCAL_SETUP.md)**
+ **For detailed setup instructions, see [LOCAL_SETUP.md](./LOCAL_SETUP.md)**
 
 ### Quick Start
 
