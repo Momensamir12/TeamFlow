@@ -222,10 +222,7 @@ The `azure-deployment` branch is configured for Azure:
 
 1. **Backend**: Deployed to Azure App Service
    - Uses SQLite database
-   - Auto-applies migrations on startup
-   - URL: `https://teamflow-edbhf6fmdxe2cae2.polandcentral-01.azurewebsites.net`
 
 2. **Frontend**: Deployed to Azure Static Web Apps
-   - Optimized production build
    - URL: `https://frontend2.z36.web.core.windows.net`
 
