@@ -1,6 +1,6 @@
 # TeamFlow - Collaborative Task Management Platform
 
-A moderntask management and team collaboration platform that helps teams organize work, assign tasks, and collaborate seamlessly.
+A modern task management and team collaboration platform that helps teams organize work, assign tasks, and collaborate seamlessly.
 
 ## Features
 
